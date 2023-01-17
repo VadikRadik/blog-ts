@@ -1,0 +1,19 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('../../assets/fonts/Roboto-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Inter UI';
+  src: url('../../assets/fonts/Inter-UI-Regular.otf') format("opentype");
+}
+
+.blog-app {
+  text-align: center;
+  font-family: 'Inter UI';
+}
