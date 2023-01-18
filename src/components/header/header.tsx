@@ -2,7 +2,7 @@ import LoginTopBlock from '../login-top-block'
 
 import classes from './header.module.scss'
 
-const Header = () => {
+const Header: React.FC = () => {
   return (
     <div className={classes['header']}>
       <span className={classes['header__label']}>Realworld Blog</span>

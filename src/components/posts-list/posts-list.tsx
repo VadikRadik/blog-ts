@@ -5,7 +5,7 @@ import PostCard from '../post-card'
 
 import classes from './posts-list.module.scss'
 
-const PostsList = () => {
+const PostsList: React.FC = () => {
   return (
     <div className={classes['post-list']}>
       <PostCard />

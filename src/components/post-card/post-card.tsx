@@ -2,7 +2,7 @@ import PostHeader from '../post-header'
 
 import classes from './post-card.module.scss'
 
-const PostCard = () => {
+const PostCard: React.FC = () => {
   return (
     <div className={`${classes['post-card']} ${classes['posts-list__card']}`}>
       <PostHeader />

@@ -2,7 +2,7 @@ import PostHeader from '../post-header'
 
 import classes from './post.module.scss'
 
-const Post = () => {
+const Post: React.FC = () => {
   return (
     <div className={classes['post']}>
       <PostHeader />

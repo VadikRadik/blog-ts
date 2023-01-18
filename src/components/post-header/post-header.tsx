@@ -3,7 +3,7 @@ import { Tag } from 'antd'
 
 import classes from './post-header.module.scss'
 
-const PostHeader = () => {
+const PostHeader: React.FC = () => {
   return (
     <div className={classes['post-header']}>
       <div className={classes['post-header__title-layout']}>
