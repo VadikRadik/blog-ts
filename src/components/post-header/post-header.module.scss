@@ -1,0 +1,72 @@
+.post-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.post-header__title-layout {
+    display: flex;
+    flex-direction: column;
+}
+
+.post-header__title-line {
+    display: flex;
+}
+
+.post-header__title {
+    font-family: 'Inter UI';
+    font-size: 20px;
+    line-height: 28px;
+    color: #1890FF;
+}
+
+.post-header__like-icon {
+    margin-left: 15px;
+    color: rgba(0, 0, 0, 0.75);
+}
+
+.post-header__likes-counter {
+    margin-left: 5px;
+    color: rgba(0, 0, 0, 0.75);
+}
+
+.post-header__tags {
+    display: flex;
+}
+
+.post-header__tag {
+    background-color: transparent;
+}
+
+.post-header__user-layout {
+    display: flex;
+}
+
+.post-header__user-name-and-date {
+    display: flex;
+    flex-direction: column;
+}
+
+.post-header__user-name {
+    font-family: 'Inter UI';
+    font-size: 18px;
+    line-height: 28px;
+    color: rgba(0, 0, 0, 0.85);
+}
+
+.post-header__date {
+    font-family: 'Inter UI';
+    font-size: 12px;
+    line-height: 22px;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.post-header__user-avatar {
+    min-width: 46px;
+    min-height: 46px;
+    background: url('./Rectangle 1.svg');
+    background-size: cover;
+    background-position: top;
+    background-repeat: no-repeat;
+    background-size: 99%;
+    margin-left: 15px;
+}

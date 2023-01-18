@@ -1,0 +1,31 @@
+.post-list {
+    width: 940px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.post-list__pagination {
+    margin-top: 26px;
+    margin-bottom: 26px;
+}
+
+.post-list__pagination-current {
+    background-color: #1890FF;
+    border-style: none;
+    color: #FFFFFF;
+}
+
+//overwriting ant styles for pagination
+:global(ul.ant-pagination > .ant-pagination-item-active) {
+    background-color: #1890FF;
+    border-style: none;
+}
+
+:global(ul.ant-pagination > .ant-pagination-item-active > a) {
+    color: #FFFFFF;
+}
+
+:global(ul.ant-pagination > .ant-pagination-item-active:hover > a) {
+    color: #cfe8ff;
+}

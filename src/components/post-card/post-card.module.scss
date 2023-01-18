@@ -1,0 +1,21 @@
+.post-card {
+    width: 940px;
+    height: 140px;
+    background: #FFFFFF;
+    border-radius: 5px;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    padding: 15px;
+}
+
+.posts-list__card {
+    margin-top: 26px;
+}
+
+.post-card__description {
+    width: 682px;
+    font-family: 'Inter UI';
+    font-size: 12px;
+    line-height: 22px;
+    color: rgba(0, 0, 0, 0.75);
+}
