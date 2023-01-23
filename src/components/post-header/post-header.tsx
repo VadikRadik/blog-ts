@@ -19,7 +19,8 @@ const PostHeader: React.FC<PostHeaderProps> = ({ isCard, article }) => {
     { [classes['post-header__tags--card']]: isCard },
     { [classes['post-header__tags--post']]: !isCard },
   )
-  const titleText = <span className={classes['post-header__title']}>{article.title}</span>
+  const titleClass = classnames([classes['post-header__title']], { [classes['post-header__title--card']]: isCard })
+  const titleText = <div className={titleClass}>{article.title}</div>
   const title = isCard ? (
     <Link to={`articles/${article.slug}`} className={classes['post-header__title-link']}>
       {titleText}
@@ -28,11 +29,11 @@ const PostHeader: React.FC<PostHeaderProps> = ({ isCard, article }) => {
     titleText
   )
   const tagsList = article.tagList
-    .filter((tag) => tag.replaceAll(' ', '').length > 0)
-    .map((tag) => {
+    .filter((tag) => tag?.replaceAll(' ', '').length > 0)
+    .map((tag, index) => {
       return (
         <div key={tag} className={classes['post-header__tag']}>
-          <Tag>{tag}</Tag>
+          <Tag>{`${tag}-${index}`}</Tag>
         </div>
       )
     })

@@ -15,6 +15,10 @@
     color: #FFFFFF;
 }
 
+.post-list__no-post-cards-element {
+    margin-bottom: 26px;
+}
+
 //overwriting ant styles for pagination
 :global(ul.ant-pagination > .ant-pagination-item-active) {
     background-color: #1890FF;

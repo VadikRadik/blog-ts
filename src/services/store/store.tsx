@@ -7,3 +7,5 @@ export const store = configureStore({
     articles: articleReducer,
   },
 })
+
+export type AppDispatch = typeof store.dispatch
