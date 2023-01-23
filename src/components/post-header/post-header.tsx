@@ -2,6 +2,8 @@ import { HeartOutlined } from '@ant-design/icons'
 import { Tag } from 'antd'
 import classnames from 'classnames'
 import { Link } from 'react-router-dom'
+import { format } from 'date-fns'
+//import { useState, useEffect } from 'react'
 
 import { Article } from '../../services/store/articles-slice'
 
@@ -12,7 +14,27 @@ export interface PostHeaderProps {
   article: Article
 }
 
+/*const useAvatarPicture = (path: string) => {
+  const [image, setImage] = useState<string>('')
+
+  useEffect(() => {
+    fetch(path)
+      .then((res) => res.blob())
+      .then((data) => setImage(URL.createObjectURL(data)))
+  }, [])
+
+  return image
+}*/
+
 const PostHeader: React.FC<PostHeaderProps> = ({ isCard, article }) => {
+  /*const image = useAvatarPicture(article.author.image)
+
+  const imageElement = image ? (
+    <img className={classes['post-header__user-avatar']} src={image} alt={'user avatar'} />
+  ) : (
+    <Spin size='small' className={classes['post-header__user-avatar']} />
+  )*/
+
   const tagsListStyleClass = classnames(
     [classes['post-header__tags']],
     { [classes['post-header__tags--card']]: isCard },
@@ -26,6 +48,22 @@ const PostHeader: React.FC<PostHeaderProps> = ({ isCard, article }) => {
   ) : (
     titleText
   )
+  const tagsList = article.tagList
+    .filter((tag) => tag.replaceAll(' ', '').length > 0)
+    .map((tag) => {
+      return (
+        <div key={article.slug} className={classes['post-header__tag']}>
+          <Tag>{tag}</Tag>
+        </div>
+      )
+    })
+
+  const userAvatar = article.author.image.length ? (
+    <img className={classes['post-header__user-avatar']} src={article.author.image} alt={'user avatar'} />
+  ) : (
+    <div className={classes['post-header__user-avatar-placeholder']}></div>
+  )
+
   return (
     <div className={classes['post-header']}>
       <div className={classes['post-header__title-layout']}>
@@ -34,83 +72,16 @@ const PostHeader: React.FC<PostHeaderProps> = ({ isCard, article }) => {
           <div className={classes['post-header__like-icon']}>
             <HeartOutlined />
           </div>
-          <div className={classes['post-header__likes-counter']}>12</div>
+          <div className={classes['post-header__likes-counter']}>{article.favoritesCount}</div>
         </div>
-        <div className={tagsListStyleClass}>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-          <div className={classes['post-header__tag']}>
-            <Tag>Tag</Tag>
-          </div>
-        </div>
+        <div className={tagsListStyleClass}>{tagsList}</div>
       </div>
       <div className={classes['post-header__user-layout']}>
         <div className={classes['post-header__user-name-and-date']}>
-          <div className={classes['post-header__user-name']}>John Doe</div>
-          <div className={classes['post-header__date']}>March 5, 2020 </div>
+          <div className={classes['post-header__user-name']}>{article.author.username}</div>
+          <div className={classes['post-header__date']}>{format(new Date(article.createdAt), 'MMMM d, Y')}</div>
         </div>
-        <div className={classes['post-header__user-avatar']}></div>
+        {userAvatar}
       </div>
     </div>
   )
