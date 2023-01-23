@@ -1,16 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { configureStore } from '@reduxjs/toolkit'
 import { Provider } from 'react-redux'
 
 import App from './components/blog-app'
-import articleReducer from './services/store/articles-slice'
-
-export const store = configureStore({
-  reducer: {
-    articles: articleReducer,
-  },
-})
+import { store } from './services/store/store'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(

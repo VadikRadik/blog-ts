@@ -19,8 +19,9 @@ const BlogApp: React.FC = () => {
             <PostsList />
           </Route>
           <Route path='/post'>
-            <Post />
+            <Post slug='asdfsdf-xr8awr' />
           </Route>
+          <Route path='/articles/:slug' render={({ match }) => <Post slug={match.params.slug} />} />
         </div>
       </div>
     </Router>

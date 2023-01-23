@@ -14,8 +14,10 @@
 
 .post-card__description {
     width: 682px;
+    height: 45px;
     font-family: 'Inter UI';
     font-size: 12px;
     line-height: 22px;
     color: rgba(0, 0, 0, 0.75);
+    overflow: hidden;
 }

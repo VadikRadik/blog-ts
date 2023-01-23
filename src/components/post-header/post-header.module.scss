@@ -19,6 +19,10 @@
     color: #1890FF;
 }
 
+.post-header__title-link {
+    text-decoration: none;
+}
+
 .post-header__like-icon {
     margin-left: 15px;
     color: rgba(0, 0, 0, 0.75);
@@ -31,6 +35,21 @@
 
 .post-header__tags {
     display: flex;
+    max-width: 680px;
+}
+
+.post-header__tags--card {
+    overflow-x: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.post-header__tags--card::-webkit-scrollbar {
+    display: none;
+}
+
+.post-header__tags--post {
+    flex-wrap: wrap;
 }
 
 .post-header__tag {
