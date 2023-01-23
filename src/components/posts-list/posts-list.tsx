@@ -11,7 +11,6 @@ const PostsList: React.FC = () => {
   const articles = useSelector((state: RootState) => state.articles.articles)
   const dispatch = useDispatch()
 
-  articles.forEach((a) => console.log(a.title))
   const posts = articles?.map((article: Article) => <PostCard key={article.title} article={article} />)
   return (
     <div className={classes['post-list']}>

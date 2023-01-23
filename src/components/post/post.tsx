@@ -38,7 +38,7 @@ const Post: React.FC<PostProps> = ({ slug }) => {
   const articleBody = article ? article.body : ''
   return (
     <div className={classes['post']}>
-      <PostHeader isCard={false} article={testArticle} />
+      <PostHeader isCard={false} article={article ?? testArticle} />
       <div className={classes['post__description']}>{article?.description}</div>
       <div className={classes['post__text']}>
         <ReactMarkdown>{articleBody}</ReactMarkdown>

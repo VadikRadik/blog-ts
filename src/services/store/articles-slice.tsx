@@ -54,8 +54,7 @@ const initialState: ArticlesState = {
       slug: 'sdfgdsfg-cc38vi',
       title: 'sdfgdsfg',
       description: 'sdfgsdf',
-      body: `# Hello, *world*! \nsdfgsdfg\n
-      $$\\sqrt{3x-1}+(1+x)^2$$`,
+      body: '# Hello, *world*!\n  fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff fffffff',
       createdAt: '2023-01-19T17:09:15.715Z',
       updatedAt: '2023-01-19T17:28:03.815Z',
       tagList: [],
@@ -123,7 +122,6 @@ export const articlesSlice = createSlice({
   initialState,
   reducers: {
     getArticles(state, action) {
-      //console.log(state)
       console.log(action)
       state.page = action.payload
     },

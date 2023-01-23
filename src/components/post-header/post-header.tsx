@@ -3,7 +3,6 @@ import { Tag } from 'antd'
 import classnames from 'classnames'
 import { Link } from 'react-router-dom'
 import { format } from 'date-fns'
-//import { useState, useEffect } from 'react'
 
 import { Article } from '../../services/store/articles-slice'
 
@@ -14,27 +13,7 @@ export interface PostHeaderProps {
   article: Article
 }
 
-/*const useAvatarPicture = (path: string) => {
-  const [image, setImage] = useState<string>('')
-
-  useEffect(() => {
-    fetch(path)
-      .then((res) => res.blob())
-      .then((data) => setImage(URL.createObjectURL(data)))
-  }, [])
-
-  return image
-}*/
-
 const PostHeader: React.FC<PostHeaderProps> = ({ isCard, article }) => {
-  /*const image = useAvatarPicture(article.author.image)
-
-  const imageElement = image ? (
-    <img className={classes['post-header__user-avatar']} src={image} alt={'user avatar'} />
-  ) : (
-    <Spin size='small' className={classes['post-header__user-avatar']} />
-  )*/
-
   const tagsListStyleClass = classnames(
     [classes['post-header__tags']],
     { [classes['post-header__tags--card']]: isCard },
@@ -52,7 +31,7 @@ const PostHeader: React.FC<PostHeaderProps> = ({ isCard, article }) => {
     .filter((tag) => tag.replaceAll(' ', '').length > 0)
     .map((tag) => {
       return (
-        <div key={article.slug} className={classes['post-header__tag']}>
+        <div key={tag} className={classes['post-header__tag']}>
           <Tag>{tag}</Tag>
         </div>
       )
