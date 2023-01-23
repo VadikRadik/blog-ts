@@ -54,7 +54,8 @@ const initialState: ArticlesState = {
       slug: 'sdfgdsfg-cc38vi',
       title: 'sdfgdsfg',
       description: 'sdfgsdf',
-      body: 'sdfgsdfg',
+      body: `# Hello, *world*! \nsdfgsdfg\n
+      $$\\sqrt{3x-1}+(1+x)^2$$`,
       createdAt: '2023-01-19T17:09:15.715Z',
       updatedAt: '2023-01-19T17:28:03.815Z',
       tagList: [],
