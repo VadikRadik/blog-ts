@@ -32,8 +32,8 @@ const PostHeader: React.FC<PostHeaderProps> = ({ isCard, article }) => {
     .filter((tag) => tag?.replaceAll(' ', '').length > 0)
     .map((tag, index) => {
       return (
-        <div key={tag} className={classes['post-header__tag']}>
-          <Tag>{`${tag}-${index}`}</Tag>
+        <div key={`${tag}-${index}`} className={classes['post-header__tag']}>
+          <Tag>{tag}</Tag>
         </div>
       )
     })

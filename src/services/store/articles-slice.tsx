@@ -28,6 +28,7 @@ export interface ArticlesState {
   loading: boolean
   error: string | null
   articles: Article[]
+  singleArticle: Article | null
 }
 
 export type RootState = {
@@ -40,14 +41,20 @@ export interface ArticlesResponse {
   error: string | null
 }
 
+export interface ArticleBySlugResponse {
+  article: Article | null
+  error: string | null
+}
+
 export interface KnownError {
   message: string | null
 }
 
-export const fetchArticlesAsync = createAsyncThunk<ArticlesResponse, void, { rejectValue: KnownError }>(
+export const fetchArticlesAsync = createAsyncThunk<ArticlesResponse, number, { rejectValue: KnownError }>(
   'articles/fetchArticlesAsync',
-  async (_, { rejectWithValue }) => {
-    const response = await fetch('https://blog.kata.academy/api/articles')
+  async (page: number, { rejectWithValue }) => {
+    const offset = (page - 1) * ARTICLES_PER_PAGE
+    const response = await fetch(`https://blog.kata.academy/api/articles?limit=${ARTICLES_PER_PAGE}&offset=${offset}`)
       .then((res) => {
         if (res.ok) {
           return res.json()
@@ -62,19 +69,38 @@ export const fetchArticlesAsync = createAsyncThunk<ArticlesResponse, void, { rej
   },
 )
 
+export const fetchArticleBySlug = createAsyncThunk<ArticleBySlugResponse, string, { rejectValue: KnownError }>(
+  'articles/fetchArticleBySlug',
+  async (slug: string, { rejectWithValue }) => {
+    const response = await fetch(`https://blog.kata.academy/api/articles/${slug}`)
+      .then((res) => {
+        if (res.ok) {
+          return res.json()
+        } else {
+          return rejectWithValue({ message: `Unable to fetch article, responce status: ${res.status}` })
+        }
+      })
+      .catch((error) => {
+        return rejectWithValue({ message: `Unable to fetch article, error: ${error.message}` })
+      })
+    return response
+  },
+)
+
 const initialState: ArticlesState = {
-  page: 0,
+  page: 1,
   articlesCount: 5,
   loading: false,
   error: null,
   articles: [],
+  singleArticle: null,
 }
 
 export const articlesSlice = createSlice({
   name: 'articles',
   initialState,
   reducers: {
-    getArticles(state, action) {
+    setPage(state, action) {
       console.log(action)
       state.page = action.payload
     },
@@ -95,9 +121,22 @@ export const articlesSlice = createSlice({
         state.loading = false
         state.error = action.payload ? action.payload.message : null
       })
+      .addCase(fetchArticleBySlug.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(fetchArticleBySlug.fulfilled, (state, action) => {
+        state.loading = false
+        state.singleArticle = action.payload.article
+        state.error = null
+      })
+      .addCase(fetchArticleBySlug.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload ? action.payload.message : null
+      })
   },
 })
 
-export const { getArticles } = articlesSlice.actions
+export const { setPage } = articlesSlice.actions
 
 export default articlesSlice.reducer

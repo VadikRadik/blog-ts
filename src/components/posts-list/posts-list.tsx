@@ -3,23 +3,17 @@ import { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 import PostCard from '../post-card'
-import {
-  Article,
-  RootState,
-  getArticles,
-  fetchArticlesAsync,
-  ARTICLES_PER_PAGE,
-} from '../../services/store/articles-slice'
+import { Article, RootState, setPage, fetchArticlesAsync, ARTICLES_PER_PAGE } from '../../services/store/articles-slice'
 import { AppDispatch } from '../../services/store/store'
 
 type DispatchType = ReturnType<typeof useDispatch<AppDispatch>>
 
 const useAritcles = (dispatch: DispatchType) => {
   const articlesResponse = useSelector((state: RootState) => state.articles)
+  const page = articlesResponse.page
   useEffect(() => {
-    dispatch(fetchArticlesAsync())
-    //dispatch(getArticles(1))
-  }, [])
+    dispatch(fetchArticlesAsync(page))
+  }, [page])
 
   return articlesResponse
 }
@@ -32,7 +26,7 @@ const PostsList: React.FC = () => {
 
   const noPostCardsClass = classes['post-list__no-post-cards-element']
 
-  const posts = articlesResponse.articles.map((article: Article) => <PostCard key={article.title} article={article} />)
+  const posts = articlesResponse.articles.map((article: Article) => <PostCard key={article.slug} article={article} />)
   const alert = articlesResponse.error ? (
     <Alert className={noPostCardsClass} message={articlesResponse.error} type='error' showIcon />
   ) : null
@@ -49,9 +43,9 @@ const PostsList: React.FC = () => {
         total={articlesResponse.articlesCount}
         defaultPageSize={ARTICLES_PER_PAGE}
         showSizeChanger={false}
+        current={articlesResponse.page}
         onChange={(page) => {
-          dispatch(getArticles(page))
-          dispatch(fetchArticlesAsync())
+          dispatch(setPage(page))
         }}
       />
     </div>
