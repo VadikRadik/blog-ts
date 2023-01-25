@@ -1,23 +1,29 @@
-import { Input } from 'antd'
-import { useForm, Controller, MultipleFieldErrors } from 'react-hook-form'
+import { Checkbox, Input } from 'antd'
+import { useForm, Controller, FieldErrors } from 'react-hook-form'
 import { useState } from 'react'
-
-interface Error {
-  type: string
-  message?: string
-  types: MultipleFieldErrors
-}
-
-interface Errors {
-  name?: Error
-  email?: Error
-  password?: Error
-}
 
 interface Fields {
   name: string
   email: string
   password: string
+  check: boolean
+}
+
+const validationRules = {
+  name: {
+    required: 'Name is required',
+    validate: (name: string, formVals: Fields) => {
+      console.log('ddd')
+      return name === formVals.password
+    },
+  },
+}
+
+const handleRegistration = (cb: React.Dispatch<React.SetStateAction<'' | 'error' | 'warning' | undefined>>) => {
+  return (data: unknown) => {
+    console.log(data)
+    cb('')
+  }
 }
 
 const RegisterForm = () => {
@@ -46,18 +52,23 @@ const RegisterForm = () => {
       name: '',
       email: '',
       password: '',
+      check: false,
     },
   })
+  /*
+  const rule = {
+    required: 'Name is required',
+    validate: (name: string, formVals: Fields) => {
+      console.log('ddd')
+      return name === formVals.password
+    },
+  }*/
 
   const [nameFieldStatus, setNameFieldStatus] = useState<'' | 'error' | 'warning' | undefined>('')
 
-  const handleRegistration = (data: unknown) => {
-    console.log(data)
-    setNameFieldStatus('')
-  }
-  const handleError = (errors: unknown) => {
+  const handleError = (errors: FieldErrors<Fields>) => {
     console.log(errors)
-    if ((errors as Errors)?.name) {
+    if (errors?.name) {
       setNameFieldStatus('error')
     } else {
       setNameFieldStatus('')
@@ -65,12 +76,13 @@ const RegisterForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit(handleRegistration, handleError)}>
+    <form onSubmit={handleSubmit(handleRegistration(setNameFieldStatus), handleError)}>
       <label>Name</label>
       <Controller
         name='name'
         control={control}
-        rules={{ required: 'Name is required' }}
+        //rules={{ required: 'Name is required' }}
+        rules={validationRules.name}
         render={({ field }) => <Input type='text' status={nameFieldStatus} {...field} />}
       />
       <label>Email</label>
@@ -92,6 +104,17 @@ const RegisterForm = () => {
           },
         }}
         render={({ field }) => <Input type='password' {...field} />}
+      />
+      <Controller
+        name='check'
+        control={control}
+        rules={{
+          validate: (val: boolean) => {
+            console.log(val)
+            return val
+          },
+        }}
+        render={({ field }) => <Checkbox {...field}>check</Checkbox>}
       />
       <button>Submit</button>
     </form>
