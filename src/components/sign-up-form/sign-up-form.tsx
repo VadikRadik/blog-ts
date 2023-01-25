@@ -25,43 +25,94 @@ const validationRules = {
       value: 20,
       message: 'Username must have a maximum of 20 characters',
     },
-    //validate: (name: string, formVals: IFormInput) => {
-    //  console.log('ddd')
-    //  return name === formVals.password
-    //},
+  },
+  email: {
+    required: 'Email addres is required',
+    pattern: /^.+@.+$/,
+  },
+  password: {
+    required: 'Password is required',
+    minLength: {
+      value: 6,
+      message: 'Username must have at least 6 characters',
+    },
+    maxLength: {
+      value: 40,
+      message: 'Username must have a maximum of 40 characters',
+    },
+  },
+  repeatPassword: {
+    validate: (repeatPassword: string, formValues: IFormInput) => {
+      return repeatPassword === formValues.password
+    },
+  },
+  agreeTerms: {
+    validate: (agreeTerms: boolean) => {
+      return agreeTerms
+    },
   },
 }
 
 interface IStateSetters {
   userName: React.Dispatch<React.SetStateAction<string | undefined>>
-  //email: React.Dispatch<React.SetStateAction<string | null>>
-  //password: React.Dispatch<React.SetStateAction<string | null>>
-  //repeatPassword: React.Dispatch<React.SetStateAction<string | null>>
-  //agreeTerms: React.Dispatch<React.SetStateAction<boolean>>
+  email: React.Dispatch<React.SetStateAction<string | undefined>>
+  password: React.Dispatch<React.SetStateAction<string | undefined>>
+  repeatPassword: React.Dispatch<React.SetStateAction<string | undefined>>
+  agreeTerms: React.Dispatch<React.SetStateAction<string | undefined>>
 }
 
 const onSubmit = (stateSetters: IStateSetters) => {
   return (data: IFormInput) => {
     console.log(data)
     stateSetters.userName('')
+    stateSetters.email('')
+    stateSetters.password('')
+    stateSetters.repeatPassword('')
+    stateSetters.agreeTerms('')
   }
 }
 
 const onError = (stateSetters: IStateSetters) => {
   return (errors: FieldErrors<IFormInput>) => {
     console.log(errors)
+
     if (errors?.userName) {
       stateSetters.userName(errors.userName.message)
     } else {
       stateSetters.userName('')
     }
+
+    if (errors?.email) {
+      if (errors.email.type === 'pattern') {
+        stateSetters.email('invalid email addres')
+      } else {
+        stateSetters.email(errors.email.message)
+      }
+    } else {
+      stateSetters.email('')
+    }
+
+    if (errors?.password) {
+      stateSetters.password(errors.password.message)
+    } else {
+      stateSetters.password('')
+    }
+
+    if (errors?.repeatPassword) {
+      stateSetters.repeatPassword('Passwords do not match')
+    } else {
+      stateSetters.repeatPassword('')
+    }
+
+    if (errors?.agreeTerms) {
+      stateSetters.agreeTerms('Please accept the agreement of the processing of the personal information')
+    } else {
+      stateSetters.agreeTerms('')
+    }
   }
 }
 
 const SignUpForm: React.FC = () => {
-  //const { register, handleSubmit } = useForm<IFormInput>()
-  //const onSubmit: SubmitHandler<IFormInput> = (data: IFormInput) => console.log(data)
-  //const onError = (error: any) => console.log(error)
   const { control, handleSubmit } = useForm({
     defaultValues: {
       userName: '',
@@ -73,7 +124,17 @@ const SignUpForm: React.FC = () => {
   })
 
   const [userNameError, setUserNameError] = useState<string | undefined>('')
-  const stateSetters = { userName: setUserNameError }
+  const [emailError, setEmailError] = useState<string | undefined>('')
+  const [passwordError, setPasswordError] = useState<string | undefined>('')
+  const [repeatPasswordError, setRepeatPasswordError] = useState<string | undefined>('')
+  const [agreeTerms, setAgreeTermsError] = useState<string | undefined>('')
+  const stateSetters = {
+    userName: setUserNameError,
+    email: setEmailError,
+    password: setPasswordError,
+    repeatPassword: setRepeatPasswordError,
+    agreeTerms: setAgreeTermsError,
+  }
 
   return (
     <form className={classes['sign-up-form']} onSubmit={handleSubmit(onSubmit(stateSetters), onError(stateSetters))}>
@@ -94,35 +155,73 @@ const SignUpForm: React.FC = () => {
       <label htmlFor='email' className={classes['sidn-up-form__label']}>
         Email address
       </label>
-      <Input id='email' placeholder='Email address' />
-      <div className={classes['sidn-up-form__validation-error']}></div>
+      <Controller
+        name='email'
+        control={control}
+        rules={validationRules.email}
+        render={({ field }) => (
+          <Input id='email' placeholder='Email address' type='text' status={emailError ? 'error' : ''} {...field} />
+        )}
+      />
+      <div className={classes['sidn-up-form__validation-error']}>{emailError ?? ''}</div>
 
       <label htmlFor='password' className={classes['sidn-up-form__label']}>
         Password
       </label>
-      <Input.Password
-        id='password'
-        type='password'
-        placeholder='Password'
-        iconRender={(visible: boolean) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+      <Controller
+        name='password'
+        control={control}
+        rules={validationRules.password}
+        render={({ field }) => (
+          <Input.Password
+            id='password'
+            type='password'
+            placeholder='Password'
+            iconRender={(visible: boolean) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+            status={passwordError ? 'error' : ''}
+            {...field}
+          />
+        )}
       />
-      <div className={classes['sidn-up-form__validation-error']}></div>
+      <div className={classes['sidn-up-form__validation-error']}>{passwordError ?? ''}</div>
 
       <label htmlFor='repeat-password' className={classes['sidn-up-form__label']}>
         Repeat Password
       </label>
-      <Input.Password
-        id='repeat-password'
-        type='password'
-        placeholder='Password'
-        iconRender={(visible: boolean) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+      <Controller
+        name='repeatPassword'
+        control={control}
+        rules={validationRules.repeatPassword}
+        render={({ field }) => (
+          <Input.Password
+            id='repeat-password'
+            type='password'
+            placeholder='Password'
+            iconRender={(visible: boolean) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+            status={repeatPasswordError ? 'error' : ''}
+            {...field}
+          />
+        )}
       />
-      <div className={classes['sidn-up-form__validation-error']}></div>
+      <div className={classes['sidn-up-form__validation-error']}>{repeatPasswordError ?? ''}</div>
 
       <Divider />
 
-      <Checkbox>I agree to the processing of my personal information</Checkbox>
-      <div className={classes['sidn-up-form__validation-error']}></div>
+      <Controller
+        name='agreeTerms'
+        control={control}
+        rules={validationRules.agreeTerms}
+        defaultValue={false}
+        render={({ field }) => {
+          console.log(field)
+          return (
+            <Checkbox checked={field.value} {...field}>
+              I agree to the processing of my personal information
+            </Checkbox>
+          )
+        }}
+      />
+      <div className={classes['sidn-up-form__validation-error']}>{agreeTerms ?? ''}</div>
 
       <Button type='primary' size='large' htmlType='submit' className={classes['sidn-up-form__button']}>
         Create
