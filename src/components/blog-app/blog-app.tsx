@@ -5,6 +5,8 @@ import Header from '../header'
 import PostsList from '../posts-list'
 import Post from '../post'
 import SignUpForm from '../sign-up-form'
+import SignInForm from '../sign-in-form'
+import ProfileForm from '../profile-form'
 import RegisterForm from '../test-form/test-form'
 
 import classes from './blog-app.module.scss'
@@ -25,6 +27,12 @@ const BlogApp: React.FC = () => {
             <Route path='/articles/:slug' render={({ match }) => <Post slug={match.params.slug} />} />
             <Route path='/sign-up' exact>
               <SignUpForm />
+            </Route>
+            <Route path='/sign-in' exact>
+              <SignInForm />
+            </Route>
+            <Route path='/profile' exact>
+              <ProfileForm />
             </Route>
             <Route path='/test-form'>
               <RegisterForm />

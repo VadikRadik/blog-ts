@@ -165,7 +165,7 @@ const SignUpForm = (routeProps: RouteComponentProps) => {
       onSubmit={handleSubmit(onSubmit(stateSetters, dispatch, routeProps), onError(stateSetters))}
     >
       <div className={classes['sign-up-form__header']}>Create new account</div>
-      <label htmlFor='username' className={classes['sidn-up-form__label']}>
+      <label htmlFor='username' className={classes['sign-up-form__label']}>
         Username
       </label>
       <Controller
@@ -176,9 +176,9 @@ const SignUpForm = (routeProps: RouteComponentProps) => {
           <Input id='username' placeholder='Username' type='text' status={userNameError ? 'error' : ''} {...field} />
         )}
       />
-      <div className={classes['sidn-up-form__validation-error']}>{userNameError ?? ''}</div>
+      <div className={classes['sign-up-form__validation-error']}>{userNameError ?? ''}</div>
 
-      <label htmlFor='email' className={classes['sidn-up-form__label']}>
+      <label htmlFor='email' className={classes['sign-up-form__label']}>
         Email address
       </label>
       <Controller
@@ -189,9 +189,9 @@ const SignUpForm = (routeProps: RouteComponentProps) => {
           <Input id='email' placeholder='Email address' type='text' status={emailError ? 'error' : ''} {...field} />
         )}
       />
-      <div className={classes['sidn-up-form__validation-error']}>{emailError ?? ''}</div>
+      <div className={classes['sign-up-form__validation-error']}>{emailError ?? ''}</div>
 
-      <label htmlFor='password' className={classes['sidn-up-form__label']}>
+      <label htmlFor='password' className={classes['sign-up-form__label']}>
         Password
       </label>
       <Controller
@@ -209,9 +209,9 @@ const SignUpForm = (routeProps: RouteComponentProps) => {
           />
         )}
       />
-      <div className={classes['sidn-up-form__validation-error']}>{passwordError ?? ''}</div>
+      <div className={classes['sign-up-form__validation-error']}>{passwordError ?? ''}</div>
 
-      <label htmlFor='repeat-password' className={classes['sidn-up-form__label']}>
+      <label htmlFor='repeat-password' className={classes['sign-up-form__label']}>
         Repeat Password
       </label>
       <Controller
@@ -229,7 +229,7 @@ const SignUpForm = (routeProps: RouteComponentProps) => {
           />
         )}
       />
-      <div className={classes['sidn-up-form__validation-error']}>{repeatPasswordError ?? ''}</div>
+      <div className={classes['sign-up-form__validation-error']}>{repeatPasswordError ?? ''}</div>
 
       <Divider />
 
@@ -246,21 +246,21 @@ const SignUpForm = (routeProps: RouteComponentProps) => {
           )
         }}
       />
-      <div className={classes['sidn-up-form__validation-error']}>{agreeTerms ?? ''}</div>
+      <div className={classes['sign-up-form__validation-error']}>{agreeTerms ?? ''}</div>
 
       <Button
         type='primary'
         size='large'
         htmlType='submit'
         loading={userState.loading}
-        className={classes['sidn-up-form__button']}
+        className={classes['sign-up-form__button']}
       >
         Create
       </Button>
 
-      <div className={classes['sidn-up-form__sign-in-redirection']}>
+      <div className={classes['sign-up-form__sign-in-redirection']}>
         Already have an account?{' '}
-        <Link to='/sign-in' className={classes['sidn-up-form__sign-in-redirection-link']}>
+        <Link to='/sign-in' className={classes['sign-up-form__sign-in-redirection-link']}>
           Sign In.
         </Link>
       </div>
