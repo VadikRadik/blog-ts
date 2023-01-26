@@ -1,0 +1,32 @@
+.avatar {
+    height: 46px;
+    width: 46px;
+    position: relative;
+}
+
+.avatar__placeholder {
+    min-width: 46px;
+    min-height: 46px;
+    background: url('./Rectangle 1.svg');
+    background-size: cover;
+    background-position: top;
+    background-repeat: no-repeat;
+    background-size: 99%;
+    background-color: #FFFFFF;
+    position: absolute;
+}
+
+.avatar__pickture {
+    height: 46px;
+    width: 46px;
+    object-fit: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    position: absolute;
+}
+
+.avatar__pickture--hidden {
+    visibility: collapse;
+}

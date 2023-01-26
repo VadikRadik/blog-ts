@@ -89,25 +89,6 @@
     color: rgba(0, 0, 0, 0.5);
 }
 
-.post-header__user-avatar-placeholder {
-    min-width: 46px;
-    min-height: 46px;
-    background: url('./Rectangle 1.svg');
-    background-size: cover;
-    background-position: top;
-    background-repeat: no-repeat;
-    background-size: 99%;
-    background-color: #FFFFFF;
-    margin-left: 15px;
-}
-
 .post-header__user-avatar {
-    height: 46px;
-    width: 46px;
-    object-fit: contain;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
     margin-left: 15px;
 }

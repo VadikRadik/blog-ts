@@ -3,8 +3,10 @@ import { Tag } from 'antd'
 import classnames from 'classnames'
 import { Link } from 'react-router-dom'
 import { format } from 'date-fns'
+import React from 'react'
 
 import { Article } from '../../services/store/articles-slice'
+import Avatar from '../avatar/avatar'
 
 import classes from './post-header.module.scss'
 
@@ -38,12 +40,6 @@ const PostHeader: React.FC<PostHeaderProps> = ({ isCard, article }) => {
       )
     })
 
-  const userAvatar = article.author.image.length ? (
-    <img className={classes['post-header__user-avatar']} src={article.author.image} alt={'user avatar'} />
-  ) : (
-    <div className={classes['post-header__user-avatar-placeholder']}></div>
-  )
-
   return (
     <div className={classes['post-header']}>
       <div className={classes['post-header__title-layout']}>
@@ -61,7 +57,9 @@ const PostHeader: React.FC<PostHeaderProps> = ({ isCard, article }) => {
           <div className={classes['post-header__user-name']}>{article.author.username}</div>
           <div className={classes['post-header__date']}>{format(new Date(article.createdAt), 'MMMM d, Y')}</div>
         </div>
-        {userAvatar}
+        <div className={classes['post-header__user-avatar']}>
+          <Avatar imageUrl={article.author.image} />
+        </div>
       </div>
     </div>
   )
