@@ -1,8 +1,13 @@
 import { Button, Checkbox, Divider, Input } from 'antd'
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons'
 import { useForm, FieldErrors, Controller } from 'react-hook-form'
-import { Link } from 'react-router-dom'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+// eslint-disable-next-line import/named
+import { RouteComponentProps, withRouter, Link } from 'react-router-dom'
+
+import { AppDispatch, DispatchType } from '../../services/store/store'
+import { postUser, RootState } from '../../services/store/user-slice'
 
 import classes from './sign-up-form.module.scss'
 
@@ -53,16 +58,27 @@ const validationRules = {
   },
 }
 
+type StateSetter = React.Dispatch<React.SetStateAction<string | undefined>>
+
 interface IStateSetters {
-  userName: React.Dispatch<React.SetStateAction<string | undefined>>
-  email: React.Dispatch<React.SetStateAction<string | undefined>>
-  password: React.Dispatch<React.SetStateAction<string | undefined>>
-  repeatPassword: React.Dispatch<React.SetStateAction<string | undefined>>
-  agreeTerms: React.Dispatch<React.SetStateAction<string | undefined>>
+  userName: StateSetter
+  email: StateSetter
+  password: StateSetter
+  repeatPassword: StateSetter
+  agreeTerms: StateSetter
 }
 
-const onSubmit = (stateSetters: IStateSetters) => {
+const onSubmit = (stateSetters: IStateSetters, dispatch: DispatchType, routeProps: RouteComponentProps) => {
   return (data: IFormInput) => {
+    dispatch(postUser({ username: data.userName, email: data.email.toLowerCase(), password: data.password })).then(
+      (res) => {
+        if (res.type === 'user/postUser/fulfilled') {
+          console.log('redirecting')
+          routeProps.history.push('/')
+        }
+      },
+    )
+
     console.log(data)
     stateSetters.userName('')
     stateSetters.email('')
@@ -112,7 +128,7 @@ const onError = (stateSetters: IStateSetters) => {
   }
 }
 
-const SignUpForm: React.FC = () => {
+const SignUpForm = (routeProps: RouteComponentProps) => {
   const { control, handleSubmit } = useForm({
     defaultValues: {
       userName: '',
@@ -135,9 +151,19 @@ const SignUpForm: React.FC = () => {
     repeatPassword: setRepeatPasswordError,
     agreeTerms: setAgreeTermsError,
   }
+  const dispatch = useDispatch<AppDispatch>()
+  const userState = useSelector((state: RootState) => state.users)
+
+  useEffect(() => {
+    setUserNameError(userState.error?.body?.username ?? '')
+    setEmailError(userState.error?.body?.email ?? '')
+  }, [userState.error])
 
   return (
-    <form className={classes['sign-up-form']} onSubmit={handleSubmit(onSubmit(stateSetters), onError(stateSetters))}>
+    <form
+      className={classes['sign-up-form']}
+      onSubmit={handleSubmit(onSubmit(stateSetters, dispatch, routeProps), onError(stateSetters))}
+    >
       <div className={classes['sign-up-form__header']}>Create new account</div>
       <label htmlFor='username' className={classes['sidn-up-form__label']}>
         Username
@@ -213,7 +239,6 @@ const SignUpForm: React.FC = () => {
         rules={validationRules.agreeTerms}
         defaultValue={false}
         render={({ field }) => {
-          console.log(field)
           return (
             <Checkbox checked={field.value} {...field}>
               I agree to the processing of my personal information
@@ -223,7 +248,13 @@ const SignUpForm: React.FC = () => {
       />
       <div className={classes['sidn-up-form__validation-error']}>{agreeTerms ?? ''}</div>
 
-      <Button type='primary' size='large' htmlType='submit' className={classes['sidn-up-form__button']}>
+      <Button
+        type='primary'
+        size='large'
+        htmlType='submit'
+        loading={userState.loading}
+        className={classes['sidn-up-form__button']}
+      >
         Create
       </Button>
 
@@ -237,4 +268,4 @@ const SignUpForm: React.FC = () => {
   )
 }
 
-export default SignUpForm
+export default withRouter(SignUpForm)

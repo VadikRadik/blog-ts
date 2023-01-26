@@ -4,9 +4,7 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import PostCard from '../post-card'
 import { Article, RootState, setPage, fetchArticlesAsync, ARTICLES_PER_PAGE } from '../../services/store/articles-slice'
-import { AppDispatch } from '../../services/store/store'
-
-type DispatchType = ReturnType<typeof useDispatch<AppDispatch>>
+import { AppDispatch, DispatchType } from '../../services/store/store'
 
 const useAritcles = (dispatch: DispatchType) => {
   const articlesResponse = useSelector((state: RootState) => state.articles)
