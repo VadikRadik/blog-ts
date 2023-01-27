@@ -1,11 +1,12 @@
-import { Button, Input } from 'antd'
-import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons'
-import { useForm, FieldErrors, Controller } from 'react-hook-form'
+import { Button } from 'antd'
+import { useForm, FieldErrors } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { AppDispatch, DispatchType } from '../../services/store/store'
 import { RootState } from '../../services/store/user-slice'
+import FormTextField from '../form-components/form-text-field'
+import FormPasswordField from '../form-components/form-password-field'
 
 import classes from './profile-form.module.scss'
 
@@ -48,16 +49,16 @@ const validationRules = {
   },
 }
 
-type StateSetter = React.Dispatch<React.SetStateAction<string | undefined>>
+type ErrorSetter = React.Dispatch<React.SetStateAction<string | undefined>>
 
-interface IStateSetters {
-  userName: StateSetter
-  email: StateSetter
-  password: StateSetter
-  avatar: StateSetter
+interface IStateErrorsSetters {
+  userName: ErrorSetter
+  email: ErrorSetter
+  password: ErrorSetter
+  avatar: ErrorSetter
 }
 
-const onSubmit = (stateSetters: IStateSetters, dispatch: DispatchType) => {
+const onSubmit = (stateSetters: IStateErrorsSetters, dispatch: DispatchType) => {
   return (data: IFormInput) => {
     //dispatch(postUser({ username: data.userName, email: data.email.toLowerCase(), password: data.password }))
 
@@ -70,7 +71,7 @@ const onSubmit = (stateSetters: IStateSetters, dispatch: DispatchType) => {
   }
 }
 
-const onError = (stateSetters: IStateSetters) => {
+const onError = (stateSetters: IStateErrorsSetters) => {
   return (errors: FieldErrors<IFormInput>) => {
     console.log(errors)
 
@@ -123,7 +124,7 @@ const ProfileForm = () => {
   const [passwordError, setPasswordError] = useState<string | undefined>('')
   const [avatarError, setAvatarError] = useState<string | undefined>('')
 
-  const stateSetters = {
+  const stateErrorsSetters = {
     userName: setUserNameError,
     email: setEmailError,
     password: setPasswordError,
@@ -140,68 +141,49 @@ const ProfileForm = () => {
   return (
     <form
       className={classes['profile-form']}
-      onSubmit={handleSubmit(onSubmit(stateSetters, dispatch), onError(stateSetters))}
+      onSubmit={handleSubmit(onSubmit(stateErrorsSetters, dispatch), onError(stateErrorsSetters))}
     >
       <div className={classes['profile-form__header']}>Edit Profile</div>
 
-      <label htmlFor='username' className={classes['profile-form__label']}>
-        Username
-      </label>
-      <Controller
-        name='userName'
-        control={control}
-        rules={validationRules.userName}
-        render={({ field }) => (
-          <Input id='username' placeholder='Username' type='text' status={userNameError ? 'error' : ''} {...field} />
-        )}
-      />
-      <div className={classes['profile-form__validation-error']}>{userNameError ?? ''}</div>
+      <div className={classes['profile-form__field']}>
+        <FormTextField
+          label={'Username'}
+          name={'userName'}
+          validationRule={validationRules.userName}
+          error={userNameError}
+          control={control}
+        />
+      </div>
 
-      <label htmlFor='email' className={classes['profile-form__label']}>
-        Email address
-      </label>
-      <Controller
-        name='email'
-        control={control}
-        rules={validationRules.email}
-        render={({ field }) => (
-          <Input id='email' placeholder='Email address' type='text' status={emailError ? 'error' : ''} {...field} />
-        )}
-      />
-      <div className={classes['profile-form__validation-error']}>{emailError ?? ''}</div>
+      <div className={classes['profile-form__field']}>
+        <FormTextField
+          label={'Email address'}
+          name={'email'}
+          validationRule={validationRules.email}
+          error={emailError}
+          control={control}
+        />
+      </div>
 
-      <label htmlFor='new-password' className={classes['profile-form__label']}>
-        New password
-      </label>
-      <Controller
-        name='password'
-        control={control}
-        rules={validationRules.password}
-        render={({ field }) => (
-          <Input.Password
-            id='new-password'
-            type='password'
-            placeholder='New password'
-            iconRender={(visible: boolean) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-            status={passwordError ? 'error' : ''}
-            {...field}
-          />
-        )}
-      />
-      <div className={classes['profile-form__validation-error']}>{passwordError ?? ''}</div>
+      <div className={classes['profile-form__field']}>
+        <FormPasswordField
+          label={'New password'}
+          name={'password'}
+          validationRule={validationRules.password}
+          error={passwordError}
+          control={control}
+        />
+      </div>
 
-      <label htmlFor='avatar' className={classes['profile-form__label']}>
-        Avatar image (url)
-      </label>
-      <Controller
-        name='avatar'
-        control={control}
-        rules={validationRules.avatar}
-        render={({ field }) => (
-          <Input id='avatar' type='text' placeholder='Avatar image' status={avatarError ? 'error' : ''} {...field} />
-        )}
-      />
-      <div className={classes['profile-form__validation-error']}>{avatarError ?? ''}</div>
+      <div className={classes['profile-form__field']}>
+        <FormTextField
+          label={'Avatar image (url)'}
+          name={'avatar'}
+          validationRule={validationRules.avatar}
+          error={avatarError}
+          control={control}
+        />
+      </div>
 
       <Button
         type='primary'

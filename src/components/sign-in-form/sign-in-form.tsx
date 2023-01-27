@@ -27,14 +27,14 @@ const validationRules = {
   },
 }
 
-type StateSetter = React.Dispatch<React.SetStateAction<string | undefined>>
+type ErrorSetter = React.Dispatch<React.SetStateAction<string | undefined>>
 
-interface IStateSetters {
-  email: StateSetter
-  password: StateSetter
+interface IStateErrorsSetters {
+  email: ErrorSetter
+  password: ErrorSetter
 }
 
-const onSubmit = (stateSetters: IStateSetters, dispatch: DispatchType, routeProps: RouteComponentProps) => {
+const onSubmit = (stateSetters: IStateErrorsSetters, dispatch: DispatchType, routeProps: RouteComponentProps) => {
   return (data: IFormInput) => {
     //dispatch(postUser({ username: data.userName, email: data.email.toLowerCase(), password: data.password })).then(
     //  (res) => {
@@ -52,7 +52,7 @@ const onSubmit = (stateSetters: IStateSetters, dispatch: DispatchType, routeProp
   }
 }
 
-const onError = (stateSetters: IStateSetters) => {
+const onError = (stateSetters: IStateErrorsSetters) => {
   return (errors: FieldErrors<IFormInput>) => {
     console.log(errors)
 
@@ -84,7 +84,7 @@ const SignInForm = (routeProps: RouteComponentProps) => {
 
   const [emailError, setEmailError] = useState<string | undefined>('')
   const [passwordError, setPasswordError] = useState<string | undefined>('')
-  const stateSetters = {
+  const stateErrorsSetters = {
     email: setEmailError,
     password: setPasswordError,
   }
@@ -98,7 +98,7 @@ const SignInForm = (routeProps: RouteComponentProps) => {
   return (
     <form
       className={classes['sign-in-form']}
-      onSubmit={handleSubmit(onSubmit(stateSetters, dispatch, routeProps), onError(stateSetters))}
+      onSubmit={handleSubmit(onSubmit(stateErrorsSetters, dispatch, routeProps), onError(stateErrorsSetters))}
     >
       <div className={classes['sign-in-form__header']}>Sign In</div>
 

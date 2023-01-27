@@ -1,6 +1,5 @@
-import { Button, Checkbox, Divider, Input } from 'antd'
-import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons'
-import { useForm, FieldErrors, Controller } from 'react-hook-form'
+import { Button, Checkbox, Divider } from 'antd'
+import { useForm, FieldErrors, Controller, RegisterOptions } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 // eslint-disable-next-line import/named
@@ -8,6 +7,8 @@ import { RouteComponentProps, withRouter, Link } from 'react-router-dom'
 
 import { AppDispatch, DispatchType } from '../../services/store/store'
 import { postUser, RootState } from '../../services/store/user-slice'
+import FormTextField from '../form-components/form-text-field'
+import FormPasswordField from '../form-components/form-password-field'
 
 import classes from './sign-up-form.module.scss'
 
@@ -58,17 +59,17 @@ const validationRules = {
   },
 }
 
-type StateSetter = React.Dispatch<React.SetStateAction<string | undefined>>
+type ErrorSetter = React.Dispatch<React.SetStateAction<string | undefined>>
 
-interface IStateSetters {
-  userName: StateSetter
-  email: StateSetter
-  password: StateSetter
-  repeatPassword: StateSetter
-  agreeTerms: StateSetter
+interface IStateErrorsSetters {
+  userName: ErrorSetter
+  email: ErrorSetter
+  password: ErrorSetter
+  repeatPassword: ErrorSetter
+  agreeTerms: ErrorSetter
 }
 
-const onSubmit = (stateSetters: IStateSetters, dispatch: DispatchType, routeProps: RouteComponentProps) => {
+const onSubmit = (stateSetters: IStateErrorsSetters, dispatch: DispatchType, routeProps: RouteComponentProps) => {
   return (data: IFormInput) => {
     dispatch(postUser({ username: data.userName, email: data.email.toLowerCase(), password: data.password })).then(
       (res) => {
@@ -88,7 +89,7 @@ const onSubmit = (stateSetters: IStateSetters, dispatch: DispatchType, routeProp
   }
 }
 
-const onError = (stateSetters: IStateSetters) => {
+const onError = (stateSetters: IStateErrorsSetters) => {
   return (errors: FieldErrors<IFormInput>) => {
     console.log(errors)
 
@@ -144,7 +145,7 @@ const SignUpForm = (routeProps: RouteComponentProps) => {
   const [passwordError, setPasswordError] = useState<string | undefined>('')
   const [repeatPasswordError, setRepeatPasswordError] = useState<string | undefined>('')
   const [agreeTerms, setAgreeTermsError] = useState<string | undefined>('')
-  const stateSetters = {
+  const stateErrorsSetters = {
     userName: setUserNameError,
     email: setEmailError,
     password: setPasswordError,
@@ -162,75 +163,49 @@ const SignUpForm = (routeProps: RouteComponentProps) => {
   return (
     <form
       className={classes['sign-up-form']}
-      onSubmit={handleSubmit(onSubmit(stateSetters, dispatch, routeProps), onError(stateSetters))}
+      onSubmit={handleSubmit(onSubmit(stateErrorsSetters, dispatch, routeProps), onError(stateErrorsSetters))}
     >
       <div className={classes['sign-up-form__header']}>Create new account</div>
 
-      <label htmlFor='username' className={classes['sign-up-form__label']}>
-        Username
-      </label>
-      <Controller
-        name='userName'
-        control={control}
-        rules={validationRules.userName}
-        render={({ field }) => (
-          <Input id='username' placeholder='Username' type='text' status={userNameError ? 'error' : ''} {...field} />
-        )}
-      />
-      <div className={classes['sign-up-form__validation-error']}>{userNameError ?? ''}</div>
+      <div className={classes['sign-up-form__field']}>
+        <FormTextField
+          label={'Username'}
+          name={'userName'}
+          validationRule={validationRules.userName}
+          error={userNameError}
+          control={control}
+        />
+      </div>
 
-      <label htmlFor='email' className={classes['sign-up-form__label']}>
-        Email address
-      </label>
-      <Controller
-        name='email'
-        control={control}
-        rules={validationRules.email}
-        render={({ field }) => (
-          <Input id='email' placeholder='Email address' type='text' status={emailError ? 'error' : ''} {...field} />
-        )}
-      />
-      <div className={classes['sign-up-form__validation-error']}>{emailError ?? ''}</div>
+      <div className={classes['sign-up-form__field']}>
+        <FormTextField
+          label={'Email address'}
+          name={'email'}
+          validationRule={validationRules.email}
+          error={emailError}
+          control={control}
+        />
+      </div>
 
-      <label htmlFor='password' className={classes['sign-up-form__label']}>
-        Password
-      </label>
-      <Controller
-        name='password'
-        control={control}
-        rules={validationRules.password}
-        render={({ field }) => (
-          <Input.Password
-            id='password'
-            type='password'
-            placeholder='Password'
-            iconRender={(visible: boolean) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-            status={passwordError ? 'error' : ''}
-            {...field}
-          />
-        )}
-      />
-      <div className={classes['sign-up-form__validation-error']}>{passwordError ?? ''}</div>
+      <div className={classes['sign-up-form__field']}>
+        <FormPasswordField
+          label={'Password'}
+          name={'password'}
+          validationRule={validationRules.password}
+          error={passwordError}
+          control={control}
+        />
+      </div>
 
-      <label htmlFor='repeat-password' className={classes['sign-up-form__label']}>
-        Repeat Password
-      </label>
-      <Controller
-        name='repeatPassword'
-        control={control}
-        rules={validationRules.repeatPassword}
-        render={({ field }) => (
-          <Input.Password
-            id='repeat-password'
-            type='password'
-            placeholder='Password'
-            iconRender={(visible: boolean) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-            status={repeatPasswordError ? 'error' : ''}
-            {...field}
-          />
-        )}
-      />
-      <div className={classes['sign-up-form__validation-error']}>{repeatPasswordError ?? ''}</div>
+      <div className={classes['sign-up-form__field']}>
+        <FormPasswordField
+          label={'Repeat Password'}
+          name={'repeatPassword'}
+          validationRule={validationRules.repeatPassword as RegisterOptions}
+          error={repeatPasswordError}
+          control={control}
+        />
+      </div>
 
       <Divider />
 
