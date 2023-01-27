@@ -74,13 +74,11 @@ const onSubmit = (stateSetters: IStateErrorsSetters, dispatch: DispatchType, rou
     dispatch(postUser({ username: data.userName, email: data.email.toLowerCase(), password: data.password })).then(
       (res) => {
         if (res.type === 'user/postUser/fulfilled') {
-          console.log('redirecting')
           routeProps.history.push('/')
         }
       },
     )
 
-    console.log(data)
     stateSetters.userName('')
     stateSetters.email('')
     stateSetters.password('')

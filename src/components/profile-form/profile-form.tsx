@@ -1,10 +1,10 @@
-import { Button } from 'antd'
+import { Button, message } from 'antd'
 import { useForm, FieldErrors } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { AppDispatch, DispatchType } from '../../services/store/store'
-import { RootState } from '../../services/store/user-slice'
+import { editUser, RootState } from '../../services/store/user-slice'
 import FormTextField from '../form-components/form-text-field'
 import FormPasswordField from '../form-components/form-password-field'
 
@@ -58,12 +58,30 @@ interface IStateErrorsSetters {
   avatar: ErrorSetter
 }
 
-const onSubmit = (stateSetters: IStateErrorsSetters, dispatch: DispatchType) => {
+const onSubmit = (
+  stateSetters: IStateErrorsSetters,
+  dispatch: DispatchType,
+  showToast: (type: 'success' | 'error', content: string) => void,
+) => {
   return (data: IFormInput) => {
-    //dispatch(postUser({ username: data.userName, email: data.email.toLowerCase(), password: data.password }))
+    dispatch(
+      editUser({
+        email: data.email.toLowerCase(),
+        password: data.password,
+        username: data.userName,
+        bio: '',
+        image: data.avatar ?? '',
+      }),
+    )
+      .then((res) => {
+        if (res.type === 'user/editUser/fulfilled') {
+          showToast('success', 'User successfully updated')
+        }
+      })
+      .catch((error) => {
+        showToast('error', error.message)
+      })
 
-    console.log(dispatch)
-    console.log(data)
     stateSetters.userName('')
     stateSetters.email('')
     stateSetters.password('')
@@ -110,12 +128,13 @@ const onError = (stateSetters: IStateErrorsSetters) => {
 }
 
 const ProfileForm = () => {
+  const userState = useSelector((state: RootState) => state.users)
   const { control, handleSubmit } = useForm({
     defaultValues: {
-      userName: '',
-      email: '',
+      userName: userState.username,
+      email: userState.email,
       password: '',
-      avatar: '',
+      avatar: userState.image,
     },
   })
 
@@ -131,70 +150,81 @@ const ProfileForm = () => {
     avatar: setAvatarError,
   }
   const dispatch = useDispatch<AppDispatch>()
-  const userState = useSelector((state: RootState) => state.users)
 
   useEffect(() => {
     setUserNameError(userState.error?.body?.username ?? '')
     setEmailError(userState.error?.body?.email ?? '')
   }, [userState.error])
 
+  const [messageApi, contextHolder] = message.useMessage()
+
+  const showToast = (type: 'success' | 'error', content: string) => {
+    messageApi.open({
+      type: type,
+      content: content,
+    })
+  }
+
   return (
-    <form
-      className={classes['profile-form']}
-      onSubmit={handleSubmit(onSubmit(stateErrorsSetters, dispatch), onError(stateErrorsSetters))}
-    >
-      <div className={classes['profile-form__header']}>Edit Profile</div>
-
-      <div className={classes['profile-form__field']}>
-        <FormTextField
-          label={'Username'}
-          name={'userName'}
-          validationRule={validationRules.userName}
-          error={userNameError}
-          control={control}
-        />
-      </div>
-
-      <div className={classes['profile-form__field']}>
-        <FormTextField
-          label={'Email address'}
-          name={'email'}
-          validationRule={validationRules.email}
-          error={emailError}
-          control={control}
-        />
-      </div>
-
-      <div className={classes['profile-form__field']}>
-        <FormPasswordField
-          label={'New password'}
-          name={'password'}
-          validationRule={validationRules.password}
-          error={passwordError}
-          control={control}
-        />
-      </div>
-
-      <div className={classes['profile-form__field']}>
-        <FormTextField
-          label={'Avatar image (url)'}
-          name={'avatar'}
-          validationRule={validationRules.avatar}
-          error={avatarError}
-          control={control}
-        />
-      </div>
-
-      <Button
-        type='primary'
-        size='large'
-        htmlType='submit'
-        loading={userState.loading}
-        className={classes['profile-form__button']}
+    <>
+      {contextHolder}
+      <form
+        className={classes['profile-form']}
+        onSubmit={handleSubmit(onSubmit(stateErrorsSetters, dispatch, showToast), onError(stateErrorsSetters))}
       >
-        Save
-      </Button>
-    </form>
+        <div className={classes['profile-form__header']}>Edit Profile</div>
+
+        <div className={classes['profile-form__field']}>
+          <FormTextField
+            label={'Username'}
+            name={'userName'}
+            validationRule={validationRules.userName}
+            error={userNameError}
+            control={control}
+          />
+        </div>
+
+        <div className={classes['profile-form__field']}>
+          <FormTextField
+            label={'Email address'}
+            name={'email'}
+            validationRule={validationRules.email}
+            error={emailError}
+            control={control}
+          />
+        </div>
+
+        <div className={classes['profile-form__field']}>
+          <FormPasswordField
+            label={'New password'}
+            name={'password'}
+            validationRule={validationRules.password}
+            error={passwordError}
+            control={control}
+          />
+        </div>
+
+        <div className={classes['profile-form__field']}>
+          <FormTextField
+            label={'Avatar image (url)'}
+            name={'avatar'}
+            validationRule={validationRules.avatar}
+            error={avatarError}
+            control={control}
+          />
+        </div>
+
+        <Button
+          type='primary'
+          size='large'
+          htmlType='submit'
+          loading={userState.loading}
+          className={classes['profile-form__button']}
+        >
+          Save
+        </Button>
+      </form>
+    </>
   )
 }
 

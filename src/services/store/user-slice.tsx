@@ -129,13 +129,14 @@ export const editUser = createAsyncThunk<PostUserResponse, Partial<User>, { reje
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
         Authorization: `Bearer ${window.localStorage.getItem('auth_token')}`,
-        body: JSON.stringify({ user: user }),
       },
+      body: JSON.stringify({ user: user }),
     })
       .then((res) => {
         if (res.ok) {
           return res.json()
         } else {
+          console.log(res)
           return rejectWithValue({ message: `Unable to edit user, responce status: ${res.status}` })
         }
       })

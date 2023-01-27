@@ -15,6 +15,7 @@ import classes from './blog-app.module.scss'
 
 const BlogApp: React.FC = () => {
   const userState = useSelector((state: RootState) => state.users)
+  console.log(userState.isLoggedIn)
 
   return (
     <Router>

@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RouteComponentProps, withRouter, Link } from 'react-router-dom'
 
 import { AppDispatch, DispatchType } from '../../services/store/store'
-import { RootState } from '../../services/store/user-slice'
+import { loginUser, RootState } from '../../services/store/user-slice'
 import FormTextField from '../form-components/form-text-field'
 import FormPasswordField from '../form-components/form-password-field'
 
@@ -36,17 +36,12 @@ interface IStateErrorsSetters {
 
 const onSubmit = (stateSetters: IStateErrorsSetters, dispatch: DispatchType, routeProps: RouteComponentProps) => {
   return (data: IFormInput) => {
-    //dispatch(postUser({ username: data.userName, email: data.email.toLowerCase(), password: data.password })).then(
-    //  (res) => {
-    //    if (res.type === 'user/postUser/fulfilled') {
-    //      console.log('redirecting')
-    //      routeProps.history.push('/')
-    //    }
-    //  },
-    //)
+    dispatch(loginUser({ email: data.email.toLowerCase(), password: data.password })).then((res) => {
+      if (res.type === 'user/loginUser/fulfilled') {
+        routeProps.history.push('/')
+      }
+    })
 
-    console.log(data)
-    console.log(routeProps)
     stateSetters.email('')
     stateSetters.password('')
   }
