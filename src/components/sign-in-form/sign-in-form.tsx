@@ -1,6 +1,5 @@
-import { Button, Input } from 'antd'
-import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons'
-import { useForm, FieldErrors, Controller } from 'react-hook-form'
+import { Button } from 'antd'
+import { useForm, FieldErrors } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 // eslint-disable-next-line import/named
@@ -8,6 +7,8 @@ import { RouteComponentProps, withRouter, Link } from 'react-router-dom'
 
 import { AppDispatch, DispatchType } from '../../services/store/store'
 import { RootState } from '../../services/store/user-slice'
+import FormTextField from '../form-components/form-text-field'
+import FormPasswordField from '../form-components/form-password-field'
 
 import classes from './sign-in-form.module.scss'
 
@@ -101,37 +102,25 @@ const SignInForm = (routeProps: RouteComponentProps) => {
     >
       <div className={classes['sign-in-form__header']}>Sign In</div>
 
-      <label htmlFor='email' className={classes['sign-in-form__label']}>
-        Email address
-      </label>
-      <Controller
-        name='email'
-        control={control}
-        rules={validationRules.email}
-        render={({ field }) => (
-          <Input id='email' placeholder='Email address' type='text' status={emailError ? 'error' : ''} {...field} />
-        )}
-      />
-      <div className={classes['sign-in-form__validation-error']}>{emailError ?? ''}</div>
+      <div className={classes['sign-in-form__field']}>
+        <FormTextField
+          label={'Email address'}
+          name={'email'}
+          validationRule={validationRules.email}
+          error={emailError}
+          control={control}
+        />
+      </div>
 
-      <label htmlFor='password' className={classes['sign-in-form__label']}>
-        Password
-      </label>
-      <Controller
-        name='password'
-        control={control}
-        rules={validationRules.password}
-        render={({ field }) => (
-          <Input.Password
-            id='password'
-            type='password'
-            placeholder='Password'
-            iconRender={(visible: boolean) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-            status={passwordError ? 'error' : ''}
-            {...field}
-          />
-        )}
-      />
+      <div className={classes['sign-in-form__field']}>
+        <FormPasswordField
+          label={'Password'}
+          name={'password'}
+          validationRule={validationRules.password}
+          error={passwordError}
+          control={control}
+        />
+      </div>
 
       <Button
         type='primary'
@@ -142,7 +131,6 @@ const SignInForm = (routeProps: RouteComponentProps) => {
       >
         Login
       </Button>
-      <div className={classes['sign-in-form__validation-error']}>{passwordError ?? ''}</div>
 
       <div className={classes['sign-in-form__sign-up-redirection']}>
         Don’t have an account?{' '}
