@@ -39,11 +39,11 @@ const validationRules = {
     required: 'Password is required',
     minLength: {
       value: 6,
-      message: 'Username must have at least 6 characters',
+      message: 'Password must have at least 6 characters',
     },
     maxLength: {
       value: 40,
-      message: 'Username must have a maximum of 40 characters',
+      message: 'Password must have a maximum of 40 characters',
     },
   },
   repeatPassword: {
@@ -165,6 +165,7 @@ const SignUpForm = (routeProps: RouteComponentProps) => {
       onSubmit={handleSubmit(onSubmit(stateSetters, dispatch, routeProps), onError(stateSetters))}
     >
       <div className={classes['sign-up-form__header']}>Create new account</div>
+
       <label htmlFor='username' className={classes['sign-up-form__label']}>
         Username
       </label>
