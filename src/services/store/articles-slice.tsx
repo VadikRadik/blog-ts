@@ -50,11 +50,13 @@ export interface KnownError {
   message: string | null
 }
 
+const API_BASE_URL = 'https://blog.kata.academy/api'
+
 export const fetchArticlesAsync = createAsyncThunk<ArticlesResponse, number, { rejectValue: KnownError }>(
   'articles/fetchArticlesAsync',
   async (page: number, { rejectWithValue }) => {
     const offset = (page - 1) * ARTICLES_PER_PAGE
-    const response = await fetch(`https://blog.kata.academy/api/articles?limit=${ARTICLES_PER_PAGE}&offset=${offset}`)
+    const response = await fetch(`${API_BASE_URL}/articles?limit=${ARTICLES_PER_PAGE}&offset=${offset}`)
       .then((res) => {
         if (res.ok) {
           return res.json()
@@ -72,7 +74,7 @@ export const fetchArticlesAsync = createAsyncThunk<ArticlesResponse, number, { r
 export const fetchArticleBySlug = createAsyncThunk<ArticleBySlugResponse, string, { rejectValue: KnownError }>(
   'articles/fetchArticleBySlug',
   async (slug: string, { rejectWithValue }) => {
-    const response = await fetch(`https://blog.kata.academy/api/articles/${slug}`)
+    const response = await fetch(`${API_BASE_URL}/articles/${slug}`)
       .then((res) => {
         if (res.ok) {
           return res.json()

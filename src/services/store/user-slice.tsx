@@ -1,4 +1,5 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+// eslint-disable-next-line import/named
+import { createSlice, createAsyncThunk, Draft } from '@reduxjs/toolkit'
 
 interface User {
   email: string
@@ -27,10 +28,12 @@ export interface UserCredentials {
   password: string
 }
 
+const API_BASE_URL = 'https://blog.kata.academy/api'
+
 export const postUser = createAsyncThunk<PostUserResponse, UserCredentials, { rejectValue: KnownError }>(
   'user/postUser',
   async (user: UserCredentials, { rejectWithValue }) => {
-    const response = await fetch('https://blog.kata.academy/api/users', {
+    const response = await fetch(`${API_BASE_URL}/users`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
@@ -63,8 +66,7 @@ export const postUser = createAsyncThunk<PostUserResponse, UserCredentials, { re
 export const getUser = createAsyncThunk<PostUserResponse, void, { rejectValue: KnownError }>(
   'user/getUser',
   async (_, { rejectWithValue }) => {
-    console.log('request sent')
-    const response = await fetch('https://blog.kata.academy/api/user', {
+    const response = await fetch(`${API_BASE_URL}/user`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
@@ -87,9 +89,9 @@ export const getUser = createAsyncThunk<PostUserResponse, void, { rejectValue: K
 )
 
 export const loginUser = createAsyncThunk<PostUserResponse, Partial<UserCredentials>, { rejectValue: KnownError }>(
-  'user/postUser',
+  'user/loginUser',
   async (user: Partial<UserCredentials>, { rejectWithValue }) => {
-    const response = await fetch('https://blog.kata.academy/api/users/login', {
+    const response = await fetch(`${API_BASE_URL}/users/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
@@ -120,10 +122,9 @@ export const loginUser = createAsyncThunk<PostUserResponse, Partial<UserCredenti
 )
 
 export const editUser = createAsyncThunk<PostUserResponse, Partial<User>, { rejectValue: KnownError }>(
-  'user/getUser',
+  'user/editUser',
   async (user: Partial<User>, { rejectWithValue }) => {
-    console.log('request sent')
-    const response = await fetch('https://blog.kata.academy/api/user', {
+    const response = await fetch(`${API_BASE_URL}/user`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
@@ -170,6 +171,19 @@ const initialState: UserState = {
   isLoggedIn: false,
 }
 
+const updateUserState = (state: Draft<UserState>, user: User) => {
+  state.email = user.email
+  state.username = user.username
+  state.bio = user.bio
+  state.image = user.image
+}
+
+const successUserState = (state: Draft<UserState>) => {
+  state.loading = false
+  state.error = null
+  state.isLoggedIn = true
+}
+
 export const usersSlice = createSlice({
   name: 'users',
   initialState,
@@ -188,13 +202,9 @@ export const usersSlice = createSlice({
       })
       .addCase(postUser.fulfilled, (state, action) => {
         console.log(action)
-        state.loading = false
-        state.email = action.payload.user.email
-        state.username = action.payload.user.username
-        state.bio = action.payload.user.bio
-        state.image = action.payload.user.image
         window.localStorage.setItem('auth_token', action.payload.user.token)
-        state.error = null
+        successUserState(state)
+        updateUserState(state, action.payload.user)
       })
       .addCase(postUser.rejected, (state, action) => {
         console.log(action)
@@ -208,14 +218,8 @@ export const usersSlice = createSlice({
       })
       .addCase(getUser.fulfilled, (state, action) => {
         console.log(action)
-        state.loading = false
-        state.email = action.payload.user.email
-        state.username = action.payload.user.username
-        state.bio = action.payload.user.bio
-        state.image = action.payload.user.image
-        state.error = null
-        state.isLoggedIn = true
-        console.log('logged in')
+        successUserState(state)
+        updateUserState(state, action.payload.user)
       })
       .addCase(getUser.rejected, (state, action) => {
         console.log(action)
@@ -223,7 +227,6 @@ export const usersSlice = createSlice({
         state.error = action.payload ?? null
         state.isLoggedIn = false
         window.localStorage.setItem('auth_token', '')
-        console.log('logged out')
       })
       // login
       .addCase(loginUser.pending, (state) => {
@@ -232,13 +235,9 @@ export const usersSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         console.log(action)
-        state.loading = false
-        state.email = action.payload.user.email
-        state.username = action.payload.user.username
-        state.bio = action.payload.user.bio
-        state.image = action.payload.user.image
         window.localStorage.setItem('auth_token', action.payload.user.token)
-        state.error = null
+        successUserState(state)
+        updateUserState(state, action.payload.user)
       })
       .addCase(loginUser.rejected, (state, action) => {
         console.log(action)
@@ -246,20 +245,16 @@ export const usersSlice = createSlice({
         state.error = action.payload ?? null
       })
       // edit
-      .addCase(postUser.pending, (state) => {
+      .addCase(editUser.pending, (state) => {
         state.loading = true
         state.error = null
       })
-      .addCase(postUser.fulfilled, (state, action) => {
+      .addCase(editUser.fulfilled, (state, action) => {
         console.log(action)
-        state.loading = false
-        state.email = action.payload.user.email
-        state.username = action.payload.user.username
-        state.bio = action.payload.user.bio
-        state.image = action.payload.user.image
-        state.error = null
+        successUserState(state)
+        updateUserState(state, action.payload.user)
       })
-      .addCase(postUser.rejected, (state, action) => {
+      .addCase(editUser.rejected, (state, action) => {
         console.log(action)
         state.loading = false
         state.error = action.payload ?? null
