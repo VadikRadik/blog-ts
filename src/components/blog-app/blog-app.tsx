@@ -1,5 +1,6 @@
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
 import { Result } from 'antd'
+import { useSelector } from 'react-redux'
 
 import Header from '../header'
 import PostsList from '../posts-list'
@@ -8,10 +9,13 @@ import SignUpForm from '../sign-up-form'
 import SignInForm from '../sign-in-form'
 import ProfileForm from '../profile-form'
 import RegisterForm from '../test-form/test-form'
+import { RootState } from '../../services/store/user-slice'
 
 import classes from './blog-app.module.scss'
 
 const BlogApp: React.FC = () => {
+  const userState = useSelector((state: RootState) => state.users)
+
   return (
     <Router>
       <div className={classes['blog-app']}>
@@ -32,7 +36,7 @@ const BlogApp: React.FC = () => {
               <SignInForm />
             </Route>
             <Route path='/profile' exact>
-              <ProfileForm />
+              {!userState.isLoggedIn ? <Redirect to='/sign-in' /> : <ProfileForm />}
             </Route>
             <Route path='/test-form'>
               <RegisterForm />
