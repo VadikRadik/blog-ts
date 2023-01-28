@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RouteComponentProps, withRouter, Link } from 'react-router-dom'
 
 import { AppDispatch, DispatchType } from '../../services/store/store'
-import { postUser, RootState } from '../../services/store/user-slice'
+import { postUser, RootState, resetError } from '../../services/store/user-slice'
 import FormTextField from '../form-components/form-text-field'
 import FormPasswordField from '../form-components/form-password-field'
 
@@ -157,6 +157,10 @@ const SignUpForm = (routeProps: RouteComponentProps) => {
     setUserNameError(userState.error?.body?.username ?? '')
     setEmailError(userState.error?.body?.email ?? '')
   }, [userState.error])
+
+  useEffect(() => {
+    dispatch(resetError())
+  }, [])
 
   return (
     <form
