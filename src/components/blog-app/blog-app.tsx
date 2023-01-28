@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import { Result, Spin } from 'antd'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -12,6 +12,7 @@ import ProfileForm from '../profile-form'
 import RegisterForm from '../test-form/test-form'
 import { getUser, RootState } from '../../services/store/user-slice'
 import { AppDispatch } from '../../services/store/store'
+import PrivateRoute from '../private-route'
 
 import classes from './blog-app.module.scss'
 
@@ -20,8 +21,6 @@ const useLogin = () => {
   const dispatch = useDispatch<AppDispatch>()
   const isTokenExist = Boolean(window.localStorage.getItem('auth_token'))
   const [isLoginDefined, setLoginDefined] = useState(userState.isLoggedIn === isTokenExist)
-  //useEffect(() => {
-  //if (!userState.isLoggedIn && isTokenExist) {
 
   useEffect(() => {
     if (!isLoginDefined) {
@@ -29,9 +28,6 @@ const useLogin = () => {
     }
   }, [])
 
-  //}, [userState.isLoggedIn])
-  console.log(isLoginDefined)
-  console.log(userState.isLoggedIn)
   return [isLoginDefined, userState.isLoggedIn]
 }
 
@@ -62,7 +58,7 @@ const BlogApp: React.FC = () => {
               <SignInForm />
             </Route>
             <Route path='/profile' exact>
-              {!isLoggedIn ? <Redirect to='/sign-in' /> : <ProfileForm />}
+              <PrivateRoute isLoggedIn={isLoggedIn} privateElement={<ProfileForm />} />
             </Route>
             <Route path='/test-form'>
               <RegisterForm />
