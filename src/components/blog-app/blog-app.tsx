@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
-import { Result } from 'antd'
-import { useSelector } from 'react-redux'
+import { Result, Spin } from 'antd'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 import Header from '../header'
 import PostsList from '../posts-list'
@@ -9,13 +10,37 @@ import SignUpForm from '../sign-up-form'
 import SignInForm from '../sign-in-form'
 import ProfileForm from '../profile-form'
 import RegisterForm from '../test-form/test-form'
-import { RootState } from '../../services/store/user-slice'
+import { getUser, RootState } from '../../services/store/user-slice'
+import { AppDispatch } from '../../services/store/store'
 
 import classes from './blog-app.module.scss'
 
-const BlogApp: React.FC = () => {
+const useLogin = () => {
   const userState = useSelector((state: RootState) => state.users)
+  const dispatch = useDispatch<AppDispatch>()
+  const isTokenExist = Boolean(window.localStorage.getItem('auth_token'))
+  const [isLoginDefined, setLoginDefined] = useState(userState.isLoggedIn === isTokenExist)
+  //useEffect(() => {
+  //if (!userState.isLoggedIn && isTokenExist) {
+
+  useEffect(() => {
+    if (!isLoginDefined) {
+      dispatch(getUser()).finally(() => setLoginDefined(true))
+    }
+  }, [])
+
+  //}, [userState.isLoggedIn])
+  console.log(isLoginDefined)
   console.log(userState.isLoggedIn)
+  return [isLoginDefined, userState.isLoggedIn]
+}
+
+const BlogApp: React.FC = () => {
+  const [isLoginDefined, isLoggedIn] = useLogin()
+
+  if (!isLoginDefined) {
+    return <Spin></Spin>
+  }
 
   return (
     <Router>
@@ -37,7 +62,7 @@ const BlogApp: React.FC = () => {
               <SignInForm />
             </Route>
             <Route path='/profile' exact>
-              {!userState.isLoggedIn ? <Redirect to='/sign-in' /> : <ProfileForm />}
+              {!isLoggedIn ? <Redirect to='/sign-in' /> : <ProfileForm />}
             </Route>
             <Route path='/test-form'>
               <RegisterForm />
