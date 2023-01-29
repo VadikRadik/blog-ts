@@ -9,7 +9,7 @@ import Post from '../post'
 import SignUpForm from '../sign-up-form'
 import SignInForm from '../sign-in-form'
 import ProfileForm from '../profile-form'
-import RegisterForm from '../test-form/test-form'
+import EditArticleForm from '../edit-article-form'
 import { getUser, RootState } from '../../services/store/user-slice'
 import { AppDispatch } from '../../services/store/store'
 import PrivateRoute from '../private-route'
@@ -60,8 +60,8 @@ const BlogApp: React.FC = () => {
             <Route path='/profile' exact>
               <PrivateRoute isLoggedIn={isLoggedIn} privateElement={<ProfileForm />} />
             </Route>
-            <Route path='/test-form'>
-              <RegisterForm />
+            <Route path='/new-article'>
+              <EditArticleForm />
             </Route>
             <Route path='*' exact>
               <Result status='404' title='404' subTitle='Sorry, the page you visited does not exist.' />

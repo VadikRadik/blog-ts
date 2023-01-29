@@ -9,17 +9,19 @@ import { AppDispatch } from '../../services/store/store'
 
 import classes from './user-top-block.module.scss'
 
-const UserTopBlock = (props: RouteComponentProps) => {
+const UserTopBlock: React.FC<RouteComponentProps> = ({ history }) => {
   const userState = useSelector((state: RootState) => state.users)
   const dispatch = useDispatch<AppDispatch>()
 
   return (
     <div className={classes['user-top-block']}>
-      <button className={classes['user-top-block__create-article']}>Create article</button>
-      <div className={classes['user-top-block__username']} onClick={() => props.history.push('/profile')}>
+      <button className={classes['user-top-block__create-article']} onClick={() => history.push('/new-article')}>
+        Create article
+      </button>
+      <div className={classes['user-top-block__username']} onClick={() => history.push('/profile')}>
         {userState.username}
       </div>
-      <div className={classes['user-top-block__avatar']} onClick={() => props.history.push('/profile')}>
+      <div className={classes['user-top-block__avatar']} onClick={() => history.push('/profile')}>
         <Avatar imageUrl={userState.image} />
       </div>
       <Button size='large' className={classes['user-top-block__log-out']} onClick={() => dispatch(logOut())}>
