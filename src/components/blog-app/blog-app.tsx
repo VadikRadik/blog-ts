@@ -50,7 +50,7 @@ const BlogApp: React.FC = () => {
             <Route path='/articles/' exact>
               <PostsList />
             </Route>
-            <Route path='/articles/:slug' render={({ match }) => <Post slug={match.params.slug} />} />
+            <Route path='/articles/:slug' exact render={({ match }) => <Post slug={match.params.slug} />} />
             <Route path='/sign-up' exact>
               <SignUpForm />
             </Route>
@@ -61,8 +61,16 @@ const BlogApp: React.FC = () => {
               <PrivateRoute isLoggedIn={isLoggedIn} privateElement={<ProfileForm />} />
             </Route>
             <Route path='/new-article'>
-              <EditArticleForm />
+              <PrivateRoute isLoggedIn={isLoggedIn} privateElement={<EditArticleForm />} />
             </Route>
+            <Route
+              path='/articles/:slug/edit'
+              render={({ match }) => {
+                return (
+                  <PrivateRoute isLoggedIn={isLoggedIn} privateElement={<EditArticleForm slug={match.params.slug} />} />
+                )
+              }}
+            />
             <Route path='*' exact>
               <Result status='404' title='404' subTitle='Sorry, the page you visited does not exist.' />
             </Route>

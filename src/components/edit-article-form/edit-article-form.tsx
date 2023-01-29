@@ -1,5 +1,5 @@
 import { Button, Input } from 'antd'
-import { useForm, FieldErrors, Controller } from 'react-hook-form'
+import { useForm, FieldErrors, Controller, DefaultValues } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 // eslint-disable-next-line import/named
@@ -44,7 +44,9 @@ interface IStateErrorsSetters {
   tags: ErrorSetter
 }
 
-const onSubmit = (stateSetters: IStateErrorsSetters, dispatch: DispatchType, routeProps: RouteComponentProps) => {
+type HistoryType = RouteComponentProps['history']
+
+const onSubmit = (stateSetters: IStateErrorsSetters, dispatch: DispatchType, history: HistoryType) => {
   return (data: IFormInput) => {
     //dispatch(loginUser({ email: data.email.toLowerCase(), password: data.password })).then((res) => {
     //  if (res.type === 'user/loginUser/fulfilled') {
@@ -89,15 +91,38 @@ const onError = (stateSetters: IStateErrorsSetters) => {
   }
 }
 
-const EditArticleForm = (routeProps: RouteComponentProps) => {
-  const { control, handleSubmit } = useForm({
-    defaultValues: {
-      title: '',
-      description: '',
-      text: '',
-      tags: [],
-    },
+type AsyncDefaultValues<TFieldValues> = (payload?: unknown) => Promise<TFieldValues>
+
+const fetchArticle = async (slug: string | undefined): Promise<IFormInput> => {
+  const res = await fetch(`https://blog.kata.academy/api/articles/${slug}`)
+    .then((r) => r.json())
+    .then((res) => {
+      const r = res.article
+      return { title: r.title, description: r.description, text: r.body, tags: r.tagList }
+    })
+
+  return res
+}
+
+interface EditArticleFormProps extends RouteComponentProps {
+  slug?: string
+}
+
+const EditArticleForm: React.FC<EditArticleFormProps> = ({ history, slug }) => {
+  const defaultValuesEmpty = { title: '', description: '', text: '', tags: [] }
+  const defaultValues: DefaultValues<IFormInput> | AsyncDefaultValues<IFormInput> = slug
+    ? async () => fetchArticle(slug)
+    : defaultValuesEmpty
+
+  const { control, handleSubmit, reset } = useForm<IFormInput>({
+    defaultValues: defaultValues,
   })
+
+  useEffect(() => {
+    if (!slug) {
+      reset(defaultValuesEmpty)
+    }
+  }, [slug])
 
   const [titleError, setTitleError] = useState<string | undefined>('')
   const [descriptionError, setDescriptionError] = useState<string | undefined>('')
@@ -115,7 +140,7 @@ const EditArticleForm = (routeProps: RouteComponentProps) => {
   return (
     <form
       className={classes['edit-article-form']}
-      onSubmit={handleSubmit(onSubmit(stateErrorsSetters, dispatch, routeProps), onError(stateErrorsSetters))}
+      onSubmit={handleSubmit(onSubmit(stateErrorsSetters, dispatch, history), onError(stateErrorsSetters))}
     >
       <div className={classes['edit-article-form__header']}>Create new article</div>
 
