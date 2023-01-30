@@ -28,7 +28,7 @@ export interface ArticlesState {
   loading: boolean
   error: string | null
   articles: Article[]
-  singleArticle: Article | null
+  currentArticle: Article | null
 }
 
 export type RootState = {
@@ -41,7 +41,7 @@ export interface ArticlesResponse {
   error: string | null
 }
 
-export interface ArticleBySlugResponse {
+export interface ArticleResponse {
   article: Article | null
   error: string | null
 }
@@ -71,7 +71,7 @@ export const fetchArticlesAsync = createAsyncThunk<ArticlesResponse, number, { r
   },
 )
 
-export const fetchArticleBySlug = createAsyncThunk<ArticleBySlugResponse, string, { rejectValue: KnownError }>(
+export const fetchArticleBySlug = createAsyncThunk<ArticleResponse, string, { rejectValue: KnownError }>(
   'articles/fetchArticleBySlug',
   async (slug: string, { rejectWithValue }) => {
     const response = await fetch(`${API_BASE_URL}/articles/${slug}`)
@@ -89,13 +89,102 @@ export const fetchArticleBySlug = createAsyncThunk<ArticleBySlugResponse, string
   },
 )
 
+export const createArticle = createAsyncThunk<ArticleResponse, Partial<Article>, { rejectValue: KnownError }>(
+  'articles/createArticle',
+  async (article: Partial<Article>, { rejectWithValue }) => {
+    const response = await fetch(`${API_BASE_URL}/articles`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8',
+        Authorization: `Bearer ${window.localStorage.getItem('auth_token')}`,
+      },
+      body: JSON.stringify({
+        article: {
+          title: article.title,
+          description: article.description,
+          body: article.body,
+          tagList: article.tagList,
+        },
+      }),
+    })
+      .then((res) => {
+        if (res.ok) {
+          return res.json()
+        } else {
+          return rejectWithValue({ message: `Unable to post article, responce status: ${res.status}` })
+        }
+      })
+      .catch((error) => {
+        return rejectWithValue({ message: `Unable to post article, error: ${error.message}` })
+      })
+    return response
+  },
+)
+
+export const editArticle = createAsyncThunk<ArticleResponse, Partial<Article>, { rejectValue: KnownError }>(
+  'articles/editArticle',
+  async (article: Partial<Article>, { rejectWithValue }) => {
+    const response = await fetch(`${API_BASE_URL}/articles/${article.slug}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8',
+        Authorization: `Bearer ${window.localStorage.getItem('auth_token')}`,
+      },
+      body: JSON.stringify({
+        article: {
+          title: article.title,
+          description: article.description,
+          body: article.body,
+          tagList: article.tagList,
+        },
+      }),
+    })
+      .then((res) => {
+        if (res.ok) {
+          return res.json()
+        } else {
+          return rejectWithValue({ message: `Unable to edit article, responce status: ${res.status}` })
+        }
+      })
+      .catch((error) => {
+        return rejectWithValue({ message: `Unable to edit article, error: ${error.message}` })
+      })
+    return response
+  },
+)
+
+export const deleteArticle = createAsyncThunk<ArticleResponse, string, { rejectValue: KnownError }>(
+  'articles/deleteArticle',
+  async (slug: string, { rejectWithValue }) => {
+    const response = await fetch(`${API_BASE_URL}/articles/${slug}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8',
+        Authorization: `Bearer ${window.localStorage.getItem('auth_token')}`,
+      },
+    })
+      .then((res) => {
+        if (res.ok) {
+          const res: ArticleResponse = { article: null, error: null }
+          return res
+        } else {
+          return rejectWithValue({ message: `Unable to delete article, responce status: ${res.status}` })
+        }
+      })
+      .catch((error) => {
+        return rejectWithValue({ message: `Unable to delete article, error: ${error.message}` })
+      })
+    return response
+  },
+)
+
 const initialState: ArticlesState = {
   page: 1,
   articlesCount: 5,
   loading: false,
   error: null,
   articles: [],
-  singleArticle: null,
+  currentArticle: null,
 }
 
 export const articlesSlice = createSlice({
@@ -108,6 +197,7 @@ export const articlesSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // get articles list
       .addCase(fetchArticlesAsync.pending, (state) => {
         state.loading = true
         state.error = null
@@ -122,16 +212,66 @@ export const articlesSlice = createSlice({
         state.loading = false
         state.error = action.payload ? action.payload.message : null
       })
+      // get article
       .addCase(fetchArticleBySlug.pending, (state) => {
         state.loading = true
         state.error = null
       })
       .addCase(fetchArticleBySlug.fulfilled, (state, action) => {
         state.loading = false
-        state.singleArticle = action.payload.article
+        state.currentArticle = action.payload.article
         state.error = null
+        console.log(action.payload.article)
       })
       .addCase(fetchArticleBySlug.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload ? action.payload.message : null
+      })
+      // post new article
+      .addCase(createArticle.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(createArticle.fulfilled, (state, action) => {
+        state.loading = false
+        state.currentArticle = action.payload.article
+        state.error = null
+        console.log(action.payload.article)
+      })
+      .addCase(createArticle.rejected, (state, action) => {
+        console.log(action.payload)
+        state.loading = false
+        state.error = action.payload ? action.payload.message : null
+      })
+      // edit article
+      .addCase(editArticle.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(editArticle.fulfilled, (state, action) => {
+        state.loading = false
+        state.currentArticle = action.payload.article
+        state.error = null
+        console.log(action.payload.article)
+      })
+      .addCase(editArticle.rejected, (state, action) => {
+        console.log(action.payload)
+        state.loading = false
+        state.error = action.payload ? action.payload.message : null
+      })
+      // delete article
+      .addCase(deleteArticle.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(deleteArticle.fulfilled, (state) => {
+        state.loading = false
+        state.currentArticle = null
+        state.error = null
+        console.log('article deleted')
+      })
+      .addCase(deleteArticle.rejected, (state, action) => {
+        console.log(action.payload)
         state.loading = false
         state.error = action.payload ? action.payload.message : null
       })

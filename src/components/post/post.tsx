@@ -28,7 +28,7 @@ const useArticle = (slug: string): Article | undefined | string => {
       return fetchedArticleResult.error
     }
 
-    foundArticle = fetchedArticleResult.singleArticle ?? undefined
+    foundArticle = fetchedArticleResult.currentArticle ?? undefined
   }
   return foundArticle
 }

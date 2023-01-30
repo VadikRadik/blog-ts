@@ -1,5 +1,5 @@
 import { Button } from 'antd'
-import { useForm, FieldErrors, Controller, Control, DefaultValues, useFieldArray } from 'react-hook-form'
+import { useForm, FieldErrors, Controller, Control, DefaultValues } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 // eslint-disable-next-line import/named
@@ -7,7 +7,7 @@ import { RouteComponentProps, withRouter } from 'react-router-dom'
 import TextArea from 'antd/es/input/TextArea'
 
 import { AppDispatch, DispatchType } from '../../services/store/store'
-import { RootState } from '../../services/store/articles-slice'
+import { RootState, editArticle, createArticle, Article } from '../../services/store/articles-slice'
 import FormTextField from '../form-components/form-text-field'
 import TagsBlock from '../form-components/tags-block'
 import { ITag, ITagable } from '../form-components/tags-block/tags-block'
@@ -43,13 +43,38 @@ interface IStateErrorsSetters {
 
 type HistoryType = RouteComponentProps['history']
 
-const onSubmit = (stateSetters: IStateErrorsSetters, dispatch: DispatchType, history: HistoryType) => {
+const onSubmit = (
+  stateSetters: IStateErrorsSetters,
+  dispatch: DispatchType,
+  slug: string | undefined,
+  history: HistoryType,
+) => {
   return (data: IFormInput) => {
-    //dispatch(loginUser({ email: data.email.toLowerCase(), password: data.password })).then((res) => {
-    //  if (res.type === 'user/loginUser/fulfilled') {
-    //    routeProps.history.push('/')
-    //  }
-    //})
+    const onlyNotEmptyTags = data.tags.filter((tag) => tag.tag.trim().length > 0)
+    const tagsList = onlyNotEmptyTags.map((tag) => tag.tag)
+    const article: Partial<Article> = {
+      title: data.title,
+      description: data.description,
+      body: data.text,
+      tagList: tagsList,
+    }
+    if (slug) {
+      dispatch(editArticle({ ...article, slug: slug })).then((res) => {
+        console.log(res)
+        if (res.type === 'articles/editArticle/fulfilled') {
+          history.push(`/articles/${slug}`)
+          // todo toast
+        }
+      })
+    } else {
+      dispatch(createArticle(article)).then((res) => {
+        if (res.type === 'articles/createArticle/fulfilled') {
+          history.push('/')
+          // todo toast
+        }
+      })
+    }
+
     console.log(data)
 
     stateSetters.title('')
@@ -117,6 +142,8 @@ const EditArticleForm: React.FC<EditArticleFormProps> = ({ history, slug }) => {
     }
   }, [slug])
 
+  const articlesState = useSelector((state: RootState) => state.articles)
+
   const [titleError, setTitleError] = useState<string | undefined>('')
   const [descriptionError, setDescriptionError] = useState<string | undefined>('')
   const [textError, setTextError] = useState<string | undefined>('')
@@ -131,7 +158,7 @@ const EditArticleForm: React.FC<EditArticleFormProps> = ({ history, slug }) => {
   return (
     <form
       className={classes['edit-article-form']}
-      onSubmit={handleSubmit(onSubmit(stateErrorsSetters, dispatch, history), onError(stateErrorsSetters))}
+      onSubmit={handleSubmit(onSubmit(stateErrorsSetters, dispatch, slug, history), onError(stateErrorsSetters))}
     >
       <div className={classes['edit-article-form__header']}>Create new article</div>
 
@@ -174,7 +201,7 @@ const EditArticleForm: React.FC<EditArticleFormProps> = ({ history, slug }) => {
         type='primary'
         size='large'
         htmlType='submit'
-        //loading={userState.loading}
+        loading={articlesState.loading}
         className={classes['edit-article__button']}
       >
         Send
