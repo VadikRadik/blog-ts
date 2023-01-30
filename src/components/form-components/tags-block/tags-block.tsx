@@ -15,7 +15,7 @@ export interface TagsBlockProps {
   control: Control<ITagable>
 }
 
-const TagsBlock = ({ control }: TagsBlockProps) => {
+export const TagsBlock = ({ control }: TagsBlockProps) => {
   const {
     fields: tagFields,
     append: tagAppend,
@@ -67,4 +67,4 @@ const TagsBlock = ({ control }: TagsBlockProps) => {
   )
 }
 
-export default TagsBlock
+//export default TagsBlock
