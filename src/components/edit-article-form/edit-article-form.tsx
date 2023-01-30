@@ -1,5 +1,14 @@
 import { Button, Input } from 'antd'
-import { useForm, FieldErrors, Controller, DefaultValues } from 'react-hook-form'
+import {
+  useForm,
+  FieldErrors,
+  Controller,
+  Control,
+  FieldValues,
+  DefaultValues,
+  useFieldArray,
+  ArrayPath,
+} from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 // eslint-disable-next-line import/named
@@ -9,14 +18,23 @@ import TextArea from 'antd/es/input/TextArea'
 import { AppDispatch, DispatchType } from '../../services/store/store'
 import { RootState } from '../../services/store/articles-slice'
 import FormTextField from '../form-components/form-text-field'
+import TagsBlock from '../form-components/tags-block'
 
 import classes from './edit-article-form.module.scss'
+
+interface ITag {
+  tag: string
+}
+
+interface ITagable {
+  tags: ITag[]
+}
 
 interface IFormInput {
   title: string
   description: string
   text: string
-  tags: string[]
+  tags: ITag[]
 }
 
 const validationRules = {
@@ -53,7 +71,7 @@ const onSubmit = (stateSetters: IStateErrorsSetters, dispatch: DispatchType, his
     //    routeProps.history.push('/')
     //  }
     //})
-
+    console.log(data)
     stateSetters.title('')
     stateSetters.description('')
     stateSetters.text('')
@@ -98,7 +116,8 @@ const fetchArticle = async (slug: string | undefined): Promise<IFormInput> => {
     .then((r) => r.json())
     .then((res) => {
       const r = res.article
-      return { title: r.title, description: r.description, text: r.body, tags: r.tagList }
+      const tags = r.tagList.map((t: string) => ({ tag: t }))
+      return { title: r.title, description: r.description, text: r.body, tags: tags }
     })
 
   return res
@@ -109,7 +128,8 @@ interface EditArticleFormProps extends RouteComponentProps {
 }
 
 const EditArticleForm: React.FC<EditArticleFormProps> = ({ history, slug }) => {
-  const defaultValuesEmpty = { title: '', description: '', text: '', tags: [] }
+  const defaultTagsValue: ITag[] = [{ tag: '' }]
+  const defaultValuesEmpty = { title: '', description: '', text: '', tags: defaultTagsValue }
   const defaultValues: DefaultValues<IFormInput> | AsyncDefaultValues<IFormInput> = slug
     ? async () => fetchArticle(slug)
     : defaultValuesEmpty
@@ -136,6 +156,9 @@ const EditArticleForm: React.FC<EditArticleFormProps> = ({ history, slug }) => {
     tags: setTagsError,
   }
   const dispatch = useDispatch<AppDispatch>()
+
+  const { fields: tagFields, append: tagAppend, remove: tagRemove } = useFieldArray({ control, name: 'tags' })
+  //const watchTags = watch('tags.tag')
 
   return (
     <form
@@ -177,25 +200,51 @@ const EditArticleForm: React.FC<EditArticleFormProps> = ({ history, slug }) => {
       />
       <div className={classes['edit-article__validation-error']}>{textError ?? ''}</div>
 
+      <TagsBlock control={control as unknown as Control<ITagable>} />
+
       <label htmlFor='tags' className={classes['edit-article__label']}>
         Tags
       </label>
       <div className={classes['edit-article__tags-wrapper']}>
         <div className={classes['edit-article__tags-fields-wrapper']}>
-          <div className={classes['edit-article__tags-field']}>
-            <Input placeholder='Tag' className={classes['edit-article__tag-input']} />
-            <Button type='primary' danger ghost className={classes['edit-article__tag-delete']}>
-              Delete
-            </Button>
-          </div>
-          <div className={classes['edit-article__tags-field']}>
-            <Input placeholder='Tag' className={classes['edit-article__tag-input']} />
-            <Button type='primary' danger ghost className={classes['edit-article__tag-delete']}>
-              Delete
-            </Button>
-          </div>
+          {tagFields.map((item, index) => {
+            return (
+              <div key={`${item.tag}-${index}`} className={classes['edit-article__tags-field']}>
+                <Controller
+                  name={`tags.${index}.tag`}
+                  control={control}
+                  //rules={validationRules.text}
+                  render={({ field }) => (
+                    <Input
+                      placeholder='Tag'
+                      {...field}
+                      //value={item.tag}
+                      //onChange={watchTags}
+                      className={classes['edit-article__tag-input']}
+                    />
+                  )}
+                />
+                <Button
+                  type='primary'
+                  danger
+                  ghost
+                  className={classes['edit-article__tag-delete']}
+                  onClick={() => tagRemove(index)}
+                >
+                  Delete
+                </Button>
+              </div>
+            )
+          })}
         </div>
-        <Button type='primary' ghost className={classes['edit-article__tag-add']}>
+        <Button
+          type='primary'
+          ghost
+          className={classes['edit-article__tag-add']}
+          onClick={() => {
+            tagAppend({ tag: '' })
+          }}
+        >
           Add Tag
         </Button>
       </div>

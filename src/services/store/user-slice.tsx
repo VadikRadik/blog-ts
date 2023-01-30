@@ -47,7 +47,6 @@ export const postUser = createAsyncThunk<PostUserResponse, UserCredentials, { re
         if (data.ok) {
           return data.body
         } else {
-          console.log(data.body)
           return rejectWithValue({
             message: `Unable to post a new user, responce status: ${data.status}`,
             body: data.body.errors,
@@ -55,7 +54,6 @@ export const postUser = createAsyncThunk<PostUserResponse, UserCredentials, { re
         }
       })
       .catch((error) => {
-        console.log(error)
         return rejectWithValue({ message: `Unable to post a new user, error: ${error.message}` })
       })
 
@@ -105,7 +103,6 @@ export const loginUser = createAsyncThunk<PostUserResponse, Partial<UserCredenti
         if (data.ok) {
           return data.body
         } else {
-          console.log(data.body)
           return rejectWithValue({
             message: `Unable to login user, responce status: ${data.status}`,
             body: data.body.errors,
@@ -113,7 +110,6 @@ export const loginUser = createAsyncThunk<PostUserResponse, Partial<UserCredenti
         }
       })
       .catch((error) => {
-        console.log(error)
         return rejectWithValue({ message: `Unable to login user, error: ${error.message}` })
       })
 
@@ -136,7 +132,6 @@ export const editUser = createAsyncThunk<PostUserResponse, Partial<User>, { reje
         if (res.ok) {
           return res.json()
         } else {
-          console.log(res)
           return rejectWithValue({ message: `Unable to edit user, responce status: ${res.status}` })
         }
       })
@@ -205,13 +200,11 @@ export const usersSlice = createSlice({
         state.error = null
       })
       .addCase(postUser.fulfilled, (state, action) => {
-        console.log(action)
         window.localStorage.setItem('auth_token', action.payload.user.token)
         successUserState(state)
         updateUserState(state, action.payload.user)
       })
       .addCase(postUser.rejected, (state, action) => {
-        console.log(action)
         state.loading = false
         state.error = action.payload ?? null
       })
@@ -221,12 +214,10 @@ export const usersSlice = createSlice({
         state.error = null
       })
       .addCase(getUser.fulfilled, (state, action) => {
-        console.log(action)
         successUserState(state)
         updateUserState(state, action.payload.user)
       })
       .addCase(getUser.rejected, (state, action) => {
-        console.log(action)
         state.loading = false
         state.error = action.payload ?? null
         state.isLoggedIn = false
@@ -238,13 +229,11 @@ export const usersSlice = createSlice({
         state.error = null
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        console.log(action)
         window.localStorage.setItem('auth_token', action.payload.user.token)
         successUserState(state)
         updateUserState(state, action.payload.user)
       })
       .addCase(loginUser.rejected, (state, action) => {
-        console.log(action)
         state.loading = false
         state.error = action.payload ?? null
       })
@@ -254,12 +243,10 @@ export const usersSlice = createSlice({
         state.error = null
       })
       .addCase(editUser.fulfilled, (state, action) => {
-        console.log(action)
         successUserState(state)
         updateUserState(state, action.payload.user)
       })
       .addCase(editUser.rejected, (state, action) => {
-        console.log(action)
         state.loading = false
         state.error = action.payload ?? null
       })

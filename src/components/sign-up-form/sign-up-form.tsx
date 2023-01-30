@@ -89,8 +89,6 @@ const onSubmit = (stateSetters: IStateErrorsSetters, dispatch: DispatchType, rou
 
 const onError = (stateSetters: IStateErrorsSetters) => {
   return (errors: FieldErrors<IFormInput>) => {
-    console.log(errors)
-
     if (errors?.userName) {
       stateSetters.userName(errors.userName.message)
     } else {

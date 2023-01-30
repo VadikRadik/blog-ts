@@ -103,7 +103,6 @@ export const articlesSlice = createSlice({
   initialState,
   reducers: {
     setPage(state, action) {
-      console.log(action)
       state.page = action.payload
     },
   },

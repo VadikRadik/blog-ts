@@ -49,8 +49,6 @@ const onSubmit = (stateSetters: IStateErrorsSetters, dispatch: DispatchType, rou
 
 const onError = (stateSetters: IStateErrorsSetters) => {
   return (errors: FieldErrors<IFormInput>) => {
-    console.log(errors)
-
     if (errors?.email) {
       if (errors.email.type === 'pattern') {
         stateSetters.email('invalid email addres')
