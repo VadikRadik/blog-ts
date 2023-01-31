@@ -57,7 +57,6 @@ const PostHeader: React.FC<PostHeaderProps> = ({ isCard, article, history }) => 
   const confirm = () => {
     dispatch(deleteArticle(article.slug))
       .then((res) => {
-        console.log(res)
         if (res.type === 'articles/deleteArticle/fulfilled') {
           showToast('success', 'Article successfully deleted')
           history.push('/')

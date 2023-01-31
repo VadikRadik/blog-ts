@@ -60,7 +60,6 @@ const onSubmit = (
     }
     if (slug) {
       dispatch(editArticle({ ...article, slug: slug })).then((res) => {
-        console.log(res)
         if (res.type === 'articles/editArticle/fulfilled') {
           history.push(`/articles/${slug}`)
           // todo toast
@@ -75,8 +74,6 @@ const onSubmit = (
       })
     }
 
-    console.log(data)
-
     stateSetters.title('')
     stateSetters.description('')
     stateSetters.text('')
@@ -85,8 +82,6 @@ const onSubmit = (
 
 const onError = (stateSetters: IStateErrorsSetters) => {
   return (errors: FieldErrors<IFormInput>) => {
-    console.log(errors)
-
     if (errors?.title) {
       stateSetters.title(errors.title.message)
     } else {

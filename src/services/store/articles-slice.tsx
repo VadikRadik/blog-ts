@@ -311,7 +311,6 @@ export const articlesSlice = createSlice({
         state.loading = false
         state.currentArticle = action.payload.article
         state.error = null
-        console.log(action.payload.article)
       })
       .addCase(fetchArticleBySlug.rejected, (state, action) => {
         state.loading = false
@@ -326,10 +325,8 @@ export const articlesSlice = createSlice({
         state.loading = false
         state.currentArticle = action.payload.article
         state.error = null
-        console.log(action.payload.article)
       })
       .addCase(createArticle.rejected, (state, action) => {
-        console.log(action.payload)
         state.loading = false
         state.error = action.payload ? action.payload.message : null
       })
@@ -342,10 +339,8 @@ export const articlesSlice = createSlice({
         state.loading = false
         state.currentArticle = action.payload.article
         state.error = null
-        console.log(action.payload.article)
       })
       .addCase(editArticle.rejected, (state, action) => {
-        console.log(action.payload)
         state.loading = false
         state.error = action.payload ? action.payload.message : null
       })
@@ -358,10 +353,8 @@ export const articlesSlice = createSlice({
         state.loading = false
         state.currentArticle = null
         state.error = null
-        console.log('article deleted')
       })
       .addCase(deleteArticle.rejected, (state, action) => {
-        console.log(action.payload)
         state.loading = false
         state.error = action.payload ? action.payload.message : null
       })
