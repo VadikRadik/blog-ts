@@ -6,6 +6,7 @@ import { Alert, Spin } from 'antd'
 import PostHeader from '../post-header'
 import { Article, RootState, fetchArticleBySlug } from '../../services/store/articles-slice'
 import { AppDispatch } from '../../services/store/store'
+import { RootState as UserRootState } from '../../services/store/user-slice'
 
 import classes from './post.module.scss'
 
@@ -16,12 +17,13 @@ export interface PostProps {
 const useArticle = (slug: string): Article | undefined | string => {
   const articles = useSelector((state: RootState) => state.articles.articles)
   let foundArticle = articles.find((a) => a.slug === slug)
+  const userLoggedIn = useSelector((state: UserRootState) => state.users.isLoggedIn)
   if (!foundArticle) {
     const fetchedArticleResult = useSelector((state: RootState) => state.articles)
     const dispatch = useDispatch<AppDispatch>()
 
     useEffect(() => {
-      dispatch(fetchArticleBySlug(slug))
+      dispatch(fetchArticleBySlug({ slug, isLoggedIn: userLoggedIn }))
     }, [slug])
 
     if (fetchedArticleResult.error !== null) {

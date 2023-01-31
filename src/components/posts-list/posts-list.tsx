@@ -20,7 +20,7 @@ const useAritcles = (dispatch: DispatchType) => {
   const page = articlesResponse.page
   useEffect(() => {
     dispatch(fetchArticlesAsync({ page: page, isLoggedIn: userLoggedIn } as FetchArticlesParams))
-  }, [page])
+  }, [page, userLoggedIn])
 
   return articlesResponse
 }

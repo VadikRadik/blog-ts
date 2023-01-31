@@ -56,6 +56,11 @@ export interface FetchArticlesParams {
   isLoggedIn: boolean
 }
 
+export interface FetchArticleParams {
+  slug: string
+  isLoggedIn?: boolean
+}
+
 const API_BASE_URL = 'https://blog.kata.academy/api'
 
 export const fetchArticlesAsync = createAsyncThunk<ArticlesResponse, FetchArticlesParams, { rejectValue: KnownError }>(
@@ -67,7 +72,7 @@ export const fetchArticlesAsync = createAsyncThunk<ArticlesResponse, FetchArticl
       Authorization: `Bearer ${window.localStorage.getItem('auth_token')}`,
     }
     const header = { 'Content-Type': 'application/json;charset=utf-8' }
-    console.log(params.isLoggedIn)
+
     const response = await fetch(`${API_BASE_URL}/articles?limit=${ARTICLES_PER_PAGE}&offset=${offset}`, {
       method: 'GET',
       headers: params.isLoggedIn ? { ...loggedInHeader } : { ...header },
@@ -86,10 +91,19 @@ export const fetchArticlesAsync = createAsyncThunk<ArticlesResponse, FetchArticl
   },
 )
 
-export const fetchArticleBySlug = createAsyncThunk<ArticleResponse, string, { rejectValue: KnownError }>(
+export const fetchArticleBySlug = createAsyncThunk<ArticleResponse, FetchArticleParams, { rejectValue: KnownError }>(
   'articles/fetchArticleBySlug',
-  async (slug: string, { rejectWithValue }) => {
-    const response = await fetch(`${API_BASE_URL}/articles/${slug}`)
+  async ({ slug, isLoggedIn }: FetchArticleParams, { rejectWithValue }) => {
+    const loggedInHeader = {
+      'Content-Type': 'application/json;charset=utf-8',
+      Authorization: `Bearer ${window.localStorage.getItem('auth_token')}`,
+    }
+    const header = { 'Content-Type': 'application/json;charset=utf-8' }
+
+    const response = await fetch(`${API_BASE_URL}/articles/${slug}`, {
+      method: 'GET',
+      headers: isLoggedIn ? { ...loggedInHeader } : { ...header },
+    })
       .then((res) => {
         if (res.ok) {
           return res.json()
