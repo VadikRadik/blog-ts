@@ -1,4 +1,5 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+// eslint-disable-next-line import/named
+import { createSlice, createAsyncThunk, Draft } from '@reduxjs/toolkit'
 
 export const ARTICLES_PER_PAGE = 20
 
@@ -50,13 +51,27 @@ export interface KnownError {
   message: string | null
 }
 
+export interface FetchArticlesParams {
+  page: number
+  isLoggedIn: boolean
+}
+
 const API_BASE_URL = 'https://blog.kata.academy/api'
 
-export const fetchArticlesAsync = createAsyncThunk<ArticlesResponse, number, { rejectValue: KnownError }>(
+export const fetchArticlesAsync = createAsyncThunk<ArticlesResponse, FetchArticlesParams, { rejectValue: KnownError }>(
   'articles/fetchArticlesAsync',
-  async (page: number, { rejectWithValue }) => {
-    const offset = (page - 1) * ARTICLES_PER_PAGE
-    const response = await fetch(`${API_BASE_URL}/articles?limit=${ARTICLES_PER_PAGE}&offset=${offset}`)
+  async (params: FetchArticlesParams, { rejectWithValue }) => {
+    const offset = (params.page - 1) * ARTICLES_PER_PAGE
+    const loggedInHeader = {
+      'Content-Type': 'application/json;charset=utf-8',
+      Authorization: `Bearer ${window.localStorage.getItem('auth_token')}`,
+    }
+    const header = { 'Content-Type': 'application/json;charset=utf-8' }
+    console.log(params.isLoggedIn)
+    const response = await fetch(`${API_BASE_URL}/articles?limit=${ARTICLES_PER_PAGE}&offset=${offset}`, {
+      method: 'GET',
+      headers: params.isLoggedIn ? { ...loggedInHeader } : { ...header },
+    })
       .then((res) => {
         if (res.ok) {
           return res.json()
@@ -178,6 +193,67 @@ export const deleteArticle = createAsyncThunk<ArticleResponse, string, { rejectV
   },
 )
 
+export const deleteLike = createAsyncThunk<ArticleResponse, string, { rejectValue: KnownError }>(
+  'articles/deleteLike',
+  async (slug: string, { rejectWithValue }) => {
+    const response = await fetch(`${API_BASE_URL}/articles/${slug}/favorite`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8',
+        Authorization: `Bearer ${window.localStorage.getItem('auth_token')}`,
+      },
+    })
+      .then((res) => {
+        if (res.ok) {
+          return res.json()
+        } else {
+          return rejectWithValue({ message: `Unable to delete like, responce status: ${res.status}` })
+        }
+      })
+      .catch((error) => {
+        return rejectWithValue({ message: `Unable to delete like, error: ${error.message}` })
+      })
+    return response
+  },
+)
+
+export const like = createAsyncThunk<ArticleResponse, string, { rejectValue: KnownError }>(
+  'articles/like',
+  async (slug: string, { rejectWithValue }) => {
+    const response = await fetch(`${API_BASE_URL}/articles/${slug}/favorite`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8',
+        Authorization: `Bearer ${window.localStorage.getItem('auth_token')}`,
+      },
+    })
+      .then((res) => {
+        if (res.ok) {
+          return res.json()
+        } else {
+          return rejectWithValue({ message: `Unable to like, responce status: ${res.status}` })
+        }
+      })
+      .catch((error) => {
+        return rejectWithValue({ message: `Unable to like, error: ${error.message}` })
+      })
+    return response
+  },
+)
+
+const updateLikes = (state: Draft<ArticlesState>, newArticle: Article) => {
+  state.articles.forEach((a) => {
+    if (a.slug === newArticle.slug) {
+      a.favorited = newArticle?.favorited
+      a.favoritesCount = newArticle?.favoritesCount
+    }
+  })
+  if (state.currentArticle?.slug === newArticle.slug) {
+    state.currentArticle.favorited = newArticle?.favorited
+    state.currentArticle.favoritesCount = newArticle?.favoritesCount
+  }
+}
+
 const initialState: ArticlesState = {
   page: 1,
   articlesCount: 5,
@@ -274,6 +350,18 @@ export const articlesSlice = createSlice({
         console.log(action.payload)
         state.loading = false
         state.error = action.payload ? action.payload.message : null
+      })
+      // delete like
+      .addCase(deleteLike.fulfilled, (state, action) => {
+        if (action.payload.article !== null) {
+          updateLikes(state, action.payload.article)
+        }
+      })
+      // like
+      .addCase(like.fulfilled, (state, action) => {
+        if (action.payload.article !== null) {
+          updateLikes(state, action.payload.article)
+        }
       })
   },
 })

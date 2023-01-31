@@ -1,4 +1,4 @@
-import { HeartOutlined } from '@ant-design/icons'
+import { HeartOutlined, HeartFilled } from '@ant-design/icons'
 import { Tag, Button, Popconfirm, message } from 'antd'
 import classnames from 'classnames'
 import { format } from 'date-fns'
@@ -8,7 +8,7 @@ import { RouteComponentProps, withRouter, Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { AppDispatch } from '../../services/store/store'
-import { Article, deleteArticle, KnownError } from '../../services/store/articles-slice'
+import { Article, deleteArticle, KnownError, like, deleteLike } from '../../services/store/articles-slice'
 import Avatar from '../avatar/avatar'
 import { RootState } from '../../services/store/user-slice'
 
@@ -96,14 +96,24 @@ const PostHeader: React.FC<PostHeaderProps> = ({ isCard, article, history }) => 
       </>
     ) : null
 
+  const likeIcon = article.favorited ? (
+    <HeartFilled
+      onClick={() => dispatch(deleteLike(article.slug))}
+      className={classes['post-header__like-icon--favorited_true']}
+    />
+  ) : (
+    <HeartOutlined
+      onClick={() => dispatch(like(article.slug))}
+      className={classes['post-header__like-icon--favorited_false']}
+    />
+  )
+
   return (
     <div className={classes['post-header']}>
       <div className={classes['post-header__title-layout']}>
         <div className={classes['post-header__title-line']}>
           {title}
-          <div className={classes['post-header__like-icon']}>
-            <HeartOutlined />
-          </div>
+          <div className={classes['post-header__like-icon']}>{likeIcon}</div>
           <div className={classes['post-header__likes-counter']}>{article.favoritesCount}</div>
         </div>
         <div className={tagsListStyleClass}>{tagsList}</div>

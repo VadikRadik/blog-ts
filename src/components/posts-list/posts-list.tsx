@@ -3,14 +3,23 @@ import { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 import PostCard from '../post-card'
-import { Article, RootState, setPage, fetchArticlesAsync, ARTICLES_PER_PAGE } from '../../services/store/articles-slice'
+import {
+  Article,
+  RootState,
+  setPage,
+  fetchArticlesAsync,
+  FetchArticlesParams,
+  ARTICLES_PER_PAGE,
+} from '../../services/store/articles-slice'
 import { AppDispatch, DispatchType } from '../../services/store/store'
+import { RootState as UserRootState } from '../../services/store/user-slice'
 
 const useAritcles = (dispatch: DispatchType) => {
   const articlesResponse = useSelector((state: RootState) => state.articles)
+  const userLoggedIn = useSelector((state: UserRootState) => state.users.isLoggedIn)
   const page = articlesResponse.page
   useEffect(() => {
-    dispatch(fetchArticlesAsync(page))
+    dispatch(fetchArticlesAsync({ page: page, isLoggedIn: userLoggedIn } as FetchArticlesParams))
   }, [page])
 
   return articlesResponse

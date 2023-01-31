@@ -33,7 +33,23 @@
 
 .post-header__like-icon {
     margin-left: 15px;
+}
+
+.post-header__like-icon--favorited_false{
     color: rgba(0, 0, 0, 0.75);
+    transition: all 0.2s ease-out;
+    &:hover {
+        color: #FF0707;
+        filter: drop-shadow(0 0 3px #FF0707);
+    }
+}
+
+.post-header__like-icon--favorited_true {
+    color: #FF0707;
+    transition: all 0.2s ease-out;
+    &:hover {
+        filter: drop-shadow(0 0 1px #FF0707);
+    }
 }
 
 .post-header__likes-counter {
