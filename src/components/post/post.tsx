@@ -15,24 +15,19 @@ export interface PostProps {
 }
 
 const useArticle = (slug: string): Article | undefined | string => {
-  const articles = useSelector((state: RootState) => state.articles.articles)
-  let foundArticle = articles.find((a) => a.slug === slug)
   const userLoggedIn = useSelector((state: UserRootState) => state.users.isLoggedIn)
-  if (!foundArticle) {
-    const fetchedArticleResult = useSelector((state: RootState) => state.articles)
-    const dispatch = useDispatch<AppDispatch>()
+  const fetchedArticleResult = useSelector((state: RootState) => state.articles)
+  const dispatch = useDispatch<AppDispatch>()
 
-    useEffect(() => {
-      dispatch(fetchArticleBySlug({ slug, isLoggedIn: userLoggedIn }))
-    }, [slug])
+  useEffect(() => {
+    dispatch(fetchArticleBySlug({ slug, isLoggedIn: userLoggedIn }))
+  }, [slug, userLoggedIn])
 
-    if (fetchedArticleResult.error !== null) {
-      return fetchedArticleResult.error
-    }
-
-    foundArticle = fetchedArticleResult.currentArticle ?? undefined
+  if (fetchedArticleResult.error !== null) {
+    return fetchedArticleResult.error
   }
-  return foundArticle
+
+  return fetchedArticleResult.currentArticle ?? undefined
 }
 
 const Post: React.FC<PostProps> = ({ slug }) => {
