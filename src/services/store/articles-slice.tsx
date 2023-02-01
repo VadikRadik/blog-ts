@@ -84,6 +84,7 @@ export const editArticle = createAsyncThunk<ArticleResponse, Partial<Article>, {
       .catch((error) => {
         return rejectWithValue({ message: `Unable to edit article, error: ${error.message}` })
       })
+
     return response
   },
 )
@@ -245,9 +246,8 @@ export const articlesSlice = createSlice({
         state.currentArticle = null
         state.error = null
       })
-      .addCase(deleteArticle.rejected, (state, action) => {
+      .addCase(deleteArticle.rejected, (state) => {
         state.loading = false
-        state.error = action.payload ? action.payload.message : null
       })
       // delete like
       .addCase(deleteLike.fulfilled, (state, action) => {

@@ -1,4 +1,4 @@
-import { Button } from 'antd'
+import { Button, message } from 'antd'
 import { useForm, FieldErrors, Controller, Control, DefaultValues } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -8,7 +8,7 @@ import TextArea from 'antd/es/input/TextArea'
 
 import { AppDispatch, DispatchType } from '../../services/store/store'
 import { editArticle, createArticle } from '../../services/store/articles-slice'
-import { Article, RootState } from '../../services/api/articles-api-types'
+import { Article, RootState, API_BASE_URL } from '../../services/api/articles-api-types'
 import FormTextField from '../form-components/form-text-field'
 import TagsBlock from '../form-components/tags-block'
 import { ITag, ITagable } from '../form-components/tags-block/tags-block'
@@ -63,14 +63,12 @@ const onSubmit = (
       dispatch(editArticle({ ...article, slug: slug })).then((res) => {
         if (res.type === 'articles/editArticle/fulfilled') {
           history.push(`/articles/${slug}`)
-          // todo toast
         }
       })
     } else {
       dispatch(createArticle(article)).then((res) => {
         if (res.type === 'articles/createArticle/fulfilled') {
           history.push('/')
-          // todo toast
         }
       })
     }
@@ -106,7 +104,7 @@ const onError = (stateSetters: IStateErrorsSetters) => {
 type AsyncDefaultValues<TFieldValues> = (payload?: unknown) => Promise<TFieldValues>
 
 const fetchArticle = async (slug: string | undefined): Promise<IFormInput> => {
-  const res = await fetch(`https://blog.kata.academy/api/articles/${slug}`)
+  const res = await fetch(`${API_BASE_URL}/articles/${slug}`)
     .then((r) => r.json())
     .then((res) => {
       const r = res.article
@@ -122,9 +120,10 @@ interface EditArticleFormProps extends RouteComponentProps {
 }
 
 const EditArticleForm: React.FC<EditArticleFormProps> = ({ history, slug }) => {
+  const isEdit = Boolean(slug)
   const defaultTagsValue: ITag[] = [{ tag: '' }]
   const defaultValuesEmpty = { title: '', description: '', text: '', tags: defaultTagsValue }
-  const defaultValues: DefaultValues<IFormInput> | AsyncDefaultValues<IFormInput> = slug
+  const defaultValues: DefaultValues<IFormInput> | AsyncDefaultValues<IFormInput> = isEdit
     ? async () => fetchArticle(slug)
     : defaultValuesEmpty
 
@@ -151,58 +150,68 @@ const EditArticleForm: React.FC<EditArticleFormProps> = ({ history, slug }) => {
   }
   const dispatch = useDispatch<AppDispatch>()
 
+  const [messageApi, contextHolder] = message.useMessage()
+  useEffect(() => {
+    if (articlesState.error) {
+      messageApi.open({ type: 'error', content: articlesState.error })
+    }
+  }, [articlesState.error])
+
   return (
-    <form
-      className={classes['edit-article-form']}
-      onSubmit={handleSubmit(onSubmit(stateErrorsSetters, dispatch, slug, history), onError(stateErrorsSetters))}
-    >
-      <div className={classes['edit-article-form__header']}>Create new article</div>
-
-      <div className={classes['edit-article__field']}>
-        <FormTextField
-          label={'Title'}
-          name={'title'}
-          validationRule={validationRules.title}
-          error={titleError}
-          control={control}
-        />
-      </div>
-
-      <div className={classes['edit-article__field']}>
-        <FormTextField
-          label={'Short description'}
-          name={'description'}
-          validationRule={validationRules.description}
-          error={descriptionError}
-          control={control}
-        />
-      </div>
-
-      <label htmlFor='text' className={classes['edit-article__label']}>
-        Text
-      </label>
-      <Controller
-        name='text'
-        control={control}
-        rules={validationRules.text}
-        render={({ field }) => (
-          <TextArea rows={6} style={{ resize: 'none' }} status={textError ? 'error' : ''} {...field} />
-        )}
-      />
-      <div className={classes['edit-article__validation-error']}>{textError ?? ''}</div>
-
-      <TagsBlock control={control as unknown as Control<ITagable>} />
-
-      <Button
-        type='primary'
-        size='large'
-        htmlType='submit'
-        loading={articlesState.loading}
-        className={classes['edit-article__button']}
+    <>
+      {contextHolder}
+      <form
+        className={classes['edit-article-form']}
+        onSubmit={handleSubmit(onSubmit(stateErrorsSetters, dispatch, slug, history), onError(stateErrorsSetters))}
       >
-        Send
-      </Button>
-    </form>
+        <div className={classes['edit-article-form__header']}>{isEdit ? 'Edit article' : 'Create new article'}</div>
+
+        <div className={classes['edit-article__field']}>
+          <FormTextField
+            label={'Title'}
+            name={'title'}
+            validationRule={validationRules.title}
+            error={titleError}
+            control={control}
+          />
+        </div>
+
+        <div className={classes['edit-article__field']}>
+          <FormTextField
+            label={'Short description'}
+            name={'description'}
+            validationRule={validationRules.description}
+            error={descriptionError}
+            control={control}
+          />
+        </div>
+
+        <label htmlFor='text' className={classes['edit-article__label']}>
+          Text
+        </label>
+        <Controller
+          name='text'
+          control={control}
+          rules={validationRules.text}
+          render={({ field }) => (
+            <TextArea rows={6} style={{ resize: 'none' }} status={textError ? 'error' : ''} {...field} />
+          )}
+        />
+        <div className={classes['edit-article__validation-error']}>{textError ?? ''}</div>
+
+        <TagsBlock control={control as unknown as Control<ITagable>} />
+
+        <Button
+          type='primary'
+          size='large'
+          htmlType='submit'
+          loading={articlesState.loading}
+          className={classes['edit-article__button']}
+        >
+          Send
+        </Button>
+      </form>
+    </>
   )
 }
 

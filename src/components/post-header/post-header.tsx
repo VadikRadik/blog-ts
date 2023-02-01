@@ -59,7 +59,6 @@ const PostHeader: React.FC<PostHeaderProps> = ({ isCard, article, history }) => 
     dispatch(deleteArticle(article.slug))
       .then((res) => {
         if (res.type === 'articles/deleteArticle/fulfilled') {
-          showToast('success', 'Article successfully deleted')
           history.push('/')
         } else {
           throw Error(`${(res.payload as unknown as KnownError).message}`)
