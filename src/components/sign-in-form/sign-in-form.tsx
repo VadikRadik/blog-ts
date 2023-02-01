@@ -1,4 +1,4 @@
-import { Button } from 'antd'
+import { Button, message } from 'antd'
 import { useForm, FieldErrors } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -84,8 +84,16 @@ const SignInForm = (routeProps: RouteComponentProps) => {
   const dispatch = useDispatch<AppDispatch>()
   const userState = useSelector((state: RootState) => state.users)
 
+  const [messageApi, contextHolder] = message.useMessage()
   useEffect(() => {
     setEmailError(userState.error?.body?.email ?? '')
+
+    if (userState.error?.body) {
+      const message = Object.entries(userState.error.body).reduce((acc, entry) => {
+        return acc + `${entry[0]}: ${entry[1]}\n`
+      }, '')
+      messageApi.open({ type: 'error', content: message })
+    }
   }, [userState.error])
 
   useEffect(() => {
@@ -93,49 +101,52 @@ const SignInForm = (routeProps: RouteComponentProps) => {
   }, [])
 
   return (
-    <form
-      className={classes['sign-in-form']}
-      onSubmit={handleSubmit(onSubmit(stateErrorsSetters, dispatch, routeProps), onError(stateErrorsSetters))}
-    >
-      <div className={classes['sign-in-form__header']}>Sign In</div>
-
-      <div className={classes['sign-in-form__field']}>
-        <FormTextField
-          label={'Email address'}
-          name={'email'}
-          validationRule={validationRules.email}
-          error={emailError}
-          control={control}
-        />
-      </div>
-
-      <div className={classes['sign-in-form__field']}>
-        <FormPasswordField
-          label={'Password'}
-          name={'password'}
-          validationRule={validationRules.password}
-          error={passwordError}
-          control={control}
-        />
-      </div>
-
-      <Button
-        type='primary'
-        size='large'
-        htmlType='submit'
-        loading={userState.loading}
-        className={classes['sign-in-form__button']}
+    <>
+      {contextHolder}
+      <form
+        className={classes['sign-in-form']}
+        onSubmit={handleSubmit(onSubmit(stateErrorsSetters, dispatch, routeProps), onError(stateErrorsSetters))}
       >
-        Login
-      </Button>
+        <div className={classes['sign-in-form__header']}>Sign In</div>
 
-      <div className={classes['sign-in-form__sign-up-redirection']}>
-        Don’t have an account?{' '}
-        <Link to='/sign-up' className={classes['sign-in-form__sign-up-redirection-link']}>
-          Sign Up.
-        </Link>
-      </div>
-    </form>
+        <div className={classes['sign-in-form__field']}>
+          <FormTextField
+            label={'Email address'}
+            name={'email'}
+            validationRule={validationRules.email}
+            error={emailError}
+            control={control}
+          />
+        </div>
+
+        <div className={classes['sign-in-form__field']}>
+          <FormPasswordField
+            label={'Password'}
+            name={'password'}
+            validationRule={validationRules.password}
+            error={passwordError}
+            control={control}
+          />
+        </div>
+
+        <Button
+          type='primary'
+          size='large'
+          htmlType='submit'
+          loading={userState.loading}
+          className={classes['sign-in-form__button']}
+        >
+          Login
+        </Button>
+
+        <div className={classes['sign-in-form__sign-up-redirection']}>
+          Don’t have an account?{' '}
+          <Link to='/sign-up' className={classes['sign-in-form__sign-up-redirection-link']}>
+            Sign Up.
+          </Link>
+        </div>
+      </form>
+    </>
   )
 }
 

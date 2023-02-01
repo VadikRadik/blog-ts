@@ -11,6 +11,7 @@ export type KnownError = {
   body?: {
     username: string
     email: string
+    'email or password': string
   }
   message: string
 }
