@@ -82,10 +82,16 @@ export const editUser = createAsyncThunk<PostUserResponse, Partial<User>, { reje
     const response = await userApi
       .editUser(user)
       .then((res) => {
-        if (res.ok) {
-          return res.json()
+        return res.json().then((data) => ({ ok: res.ok, status: res.status, body: data }))
+      })
+      .then((data) => {
+        if (data.ok) {
+          return data.body
         } else {
-          return rejectWithValue({ message: `Unable to edit user, responce status: ${res.status}` })
+          return rejectWithValue({
+            message: `Unable to edit user, responce status: ${data.status}`,
+            body: data.body.errors,
+          })
         }
       })
       .catch((error) => {

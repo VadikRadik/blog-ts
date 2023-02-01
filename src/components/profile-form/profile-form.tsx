@@ -149,11 +149,6 @@ const ProfileForm = () => {
   }
   const dispatch = useDispatch<AppDispatch>()
 
-  useEffect(() => {
-    setUserNameError(userState.error?.body?.username ?? '')
-    setEmailError(userState.error?.body?.email ?? '')
-  }, [userState.error])
-
   const [messageApi, contextHolder] = message.useMessage()
 
   const showToast = (type: 'success' | 'error', content: string) => {
@@ -162,6 +157,17 @@ const ProfileForm = () => {
       content: content,
     })
   }
+
+  useEffect(() => {
+    setUserNameError(userState.error?.body?.username ?? '')
+    setEmailError(userState.error?.body?.email ?? '')
+    if (userState.error?.body) {
+      const message = Object.entries(userState.error.body).reduce((acc, entry) => {
+        return acc + `${entry[0]}: ${entry[1]}\n`
+      }, '')
+      showToast('error', message)
+    }
+  }, [userState.error])
 
   return (
     <>
