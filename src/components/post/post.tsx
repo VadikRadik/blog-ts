@@ -4,7 +4,8 @@ import { useEffect } from 'react'
 import { Alert, Spin } from 'antd'
 
 import PostHeader from '../post-header'
-import { Article, RootState, fetchArticleBySlug } from '../../services/store/articles-slice'
+import { fetchArticleBySlug } from '../../services/store/articles-slice'
+import { Article, RootState } from '../../services/api/articles-api-types'
 import { AppDispatch } from '../../services/store/store'
 import { RootState as UserRootState } from '../../services/store/user-slice'
 

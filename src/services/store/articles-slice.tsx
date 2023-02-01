@@ -1,82 +1,22 @@
 // eslint-disable-next-line import/named
 import { createSlice, createAsyncThunk, Draft } from '@reduxjs/toolkit'
 
-export const ARTICLES_PER_PAGE = 20
-
-export interface Author {
-  username: string
-  bio?: string
-  image: string
-  following: boolean
-}
-
-export interface Article {
-  slug: string
-  title: string
-  description: string
-  body: string
-  createdAt: string
-  updatedAt: string
-  tagList: string[]
-  favorited: boolean
-  favoritesCount: number
-  author: Author
-}
-
-export interface ArticlesState {
-  page: number
-  articlesCount: number
-  loading: boolean
-  error: string | null
-  articles: Article[]
-  currentArticle: Article | null
-}
-
-export type RootState = {
-  articles: ArticlesState
-}
-
-export interface ArticlesResponse {
-  articlesCount: number
-  articles: Article[]
-  error: string | null
-}
-
-export interface ArticleResponse {
-  article: Article | null
-  error: string | null
-}
-
-export interface KnownError {
-  message: string | null
-}
-
-export interface FetchArticlesParams {
-  page: number
-  isLoggedIn: boolean
-}
-
-export interface FetchArticleParams {
-  slug: string
-  isLoggedIn?: boolean
-}
-
-const API_BASE_URL = 'https://blog.kata.academy/api'
+import { articlesApi } from '../api/articles-api'
+import {
+  FetchArticlesParams,
+  FetchArticleParams,
+  Article,
+  ArticlesResponse,
+  ArticleResponse,
+  KnownError,
+  ArticlesState,
+} from '../api/articles-api-types'
 
 export const fetchArticlesAsync = createAsyncThunk<ArticlesResponse, FetchArticlesParams, { rejectValue: KnownError }>(
   'articles/fetchArticlesAsync',
   async (params: FetchArticlesParams, { rejectWithValue }) => {
-    const offset = (params.page - 1) * ARTICLES_PER_PAGE
-    const loggedInHeader = {
-      'Content-Type': 'application/json;charset=utf-8',
-      Authorization: `Bearer ${window.localStorage.getItem('auth_token')}`,
-    }
-    const header = { 'Content-Type': 'application/json;charset=utf-8' }
-
-    const response = await fetch(`${API_BASE_URL}/articles?limit=${ARTICLES_PER_PAGE}&offset=${offset}`, {
-      method: 'GET',
-      headers: params.isLoggedIn ? { ...loggedInHeader } : { ...header },
-    })
+    const response = await articlesApi
+      .fetchArticles(params)
       .then((res) => {
         if (res.ok) {
           return res.json()
@@ -93,17 +33,9 @@ export const fetchArticlesAsync = createAsyncThunk<ArticlesResponse, FetchArticl
 
 export const fetchArticleBySlug = createAsyncThunk<ArticleResponse, FetchArticleParams, { rejectValue: KnownError }>(
   'articles/fetchArticleBySlug',
-  async ({ slug, isLoggedIn }: FetchArticleParams, { rejectWithValue }) => {
-    const loggedInHeader = {
-      'Content-Type': 'application/json;charset=utf-8',
-      Authorization: `Bearer ${window.localStorage.getItem('auth_token')}`,
-    }
-    const header = { 'Content-Type': 'application/json;charset=utf-8' }
-
-    const response = await fetch(`${API_BASE_URL}/articles/${slug}`, {
-      method: 'GET',
-      headers: isLoggedIn ? { ...loggedInHeader } : { ...header },
-    })
+  async (params: FetchArticleParams, { rejectWithValue }) => {
+    const response = await articlesApi
+      .fetchArticleBySlug(params)
       .then((res) => {
         if (res.ok) {
           return res.json()
@@ -121,21 +53,8 @@ export const fetchArticleBySlug = createAsyncThunk<ArticleResponse, FetchArticle
 export const createArticle = createAsyncThunk<ArticleResponse, Partial<Article>, { rejectValue: KnownError }>(
   'articles/createArticle',
   async (article: Partial<Article>, { rejectWithValue }) => {
-    const response = await fetch(`${API_BASE_URL}/articles`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-        Authorization: `Bearer ${window.localStorage.getItem('auth_token')}`,
-      },
-      body: JSON.stringify({
-        article: {
-          title: article.title,
-          description: article.description,
-          body: article.body,
-          tagList: article.tagList,
-        },
-      }),
-    })
+    const response = await articlesApi
+      .createArticle(article)
       .then((res) => {
         if (res.ok) {
           return res.json()
@@ -153,21 +72,8 @@ export const createArticle = createAsyncThunk<ArticleResponse, Partial<Article>,
 export const editArticle = createAsyncThunk<ArticleResponse, Partial<Article>, { rejectValue: KnownError }>(
   'articles/editArticle',
   async (article: Partial<Article>, { rejectWithValue }) => {
-    const response = await fetch(`${API_BASE_URL}/articles/${article.slug}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-        Authorization: `Bearer ${window.localStorage.getItem('auth_token')}`,
-      },
-      body: JSON.stringify({
-        article: {
-          title: article.title,
-          description: article.description,
-          body: article.body,
-          tagList: article.tagList,
-        },
-      }),
-    })
+    const response = await articlesApi
+      .editArticle(article)
       .then((res) => {
         if (res.ok) {
           return res.json()
@@ -185,13 +91,8 @@ export const editArticle = createAsyncThunk<ArticleResponse, Partial<Article>, {
 export const deleteArticle = createAsyncThunk<ArticleResponse, string, { rejectValue: KnownError }>(
   'articles/deleteArticle',
   async (slug: string, { rejectWithValue }) => {
-    const response = await fetch(`${API_BASE_URL}/articles/${slug}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-        Authorization: `Bearer ${window.localStorage.getItem('auth_token')}`,
-      },
-    })
+    const response = await articlesApi
+      .deleteArticle(slug)
       .then((res) => {
         if (res.ok) {
           const res: ArticleResponse = { article: null, error: null }
@@ -210,13 +111,8 @@ export const deleteArticle = createAsyncThunk<ArticleResponse, string, { rejectV
 export const deleteLike = createAsyncThunk<ArticleResponse, string, { rejectValue: KnownError }>(
   'articles/deleteLike',
   async (slug: string, { rejectWithValue }) => {
-    const response = await fetch(`${API_BASE_URL}/articles/${slug}/favorite`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-        Authorization: `Bearer ${window.localStorage.getItem('auth_token')}`,
-      },
-    })
+    const response = await articlesApi
+      .deleteLike(slug)
       .then((res) => {
         if (res.ok) {
           return res.json()
@@ -234,13 +130,8 @@ export const deleteLike = createAsyncThunk<ArticleResponse, string, { rejectValu
 export const like = createAsyncThunk<ArticleResponse, string, { rejectValue: KnownError }>(
   'articles/like',
   async (slug: string, { rejectWithValue }) => {
-    const response = await fetch(`${API_BASE_URL}/articles/${slug}/favorite`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-        Authorization: `Bearer ${window.localStorage.getItem('auth_token')}`,
-      },
-    })
+    const response = await articlesApi
+      .like(slug)
       .then((res) => {
         if (res.ok) {
           return res.json()

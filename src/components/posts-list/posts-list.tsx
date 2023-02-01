@@ -3,14 +3,8 @@ import { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 import PostCard from '../post-card'
-import {
-  Article,
-  RootState,
-  setPage,
-  fetchArticlesAsync,
-  FetchArticlesParams,
-  ARTICLES_PER_PAGE,
-} from '../../services/store/articles-slice'
+import { setPage, fetchArticlesAsync } from '../../services/store/articles-slice'
+import { Article, RootState, FetchArticlesParams, ARTICLES_PER_PAGE } from '../../services/api/articles-api-types'
 import { AppDispatch, DispatchType } from '../../services/store/store'
 import { RootState as UserRootState } from '../../services/store/user-slice'
 

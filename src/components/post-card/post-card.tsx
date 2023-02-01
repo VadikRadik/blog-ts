@@ -1,5 +1,5 @@
 import PostHeader from '../post-header'
-import { Article } from '../../services/store/articles-slice'
+import { Article } from '../../services/api/articles-api-types'
 
 import classes from './post-card.module.scss'
 

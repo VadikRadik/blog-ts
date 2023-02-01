@@ -8,7 +8,8 @@ import { RouteComponentProps, withRouter, Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { AppDispatch } from '../../services/store/store'
-import { Article, deleteArticle, KnownError, like, deleteLike } from '../../services/store/articles-slice'
+import { deleteArticle, like, deleteLike } from '../../services/store/articles-slice'
+import { Article, KnownError } from '../../services/api/articles-api-types'
 import Avatar from '../avatar/avatar'
 import { RootState } from '../../services/store/user-slice'
 

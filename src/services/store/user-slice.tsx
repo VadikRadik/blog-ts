@@ -1,45 +1,14 @@
 // eslint-disable-next-line import/named
 import { createSlice, createAsyncThunk, Draft } from '@reduxjs/toolkit'
 
-interface User {
-  email: string
-  token: string
-  username: string
-  bio: string
-  image: string
-  password?: string
-}
-
-type KnownError = {
-  body?: {
-    username: string
-    email: string
-  }
-  message: string
-}
-
-interface PostUserResponse {
-  user: User
-}
-
-export interface UserCredentials {
-  username: string
-  email: string
-  password: string
-}
-
-const API_BASE_URL = 'https://blog.kata.academy/api'
+import { userApi } from '../api/user-api'
+import { PostUserResponse, UserCredentials, User, KnownError } from '../api/user-api-types'
 
 export const postUser = createAsyncThunk<PostUserResponse, UserCredentials, { rejectValue: KnownError }>(
   'user/postUser',
-  async (user: UserCredentials, { rejectWithValue }) => {
-    const response = await fetch(`${API_BASE_URL}/users`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-      },
-      body: JSON.stringify({ user: user }),
-    })
+  async (userCredentials: UserCredentials, { rejectWithValue }) => {
+    const response = userApi
+      .createUser(userCredentials)
       .then((res) => {
         return res.json().then((data) => ({ ok: res.ok, status: res.status, body: data }))
       })
@@ -64,13 +33,8 @@ export const postUser = createAsyncThunk<PostUserResponse, UserCredentials, { re
 export const getUser = createAsyncThunk<PostUserResponse, void, { rejectValue: KnownError }>(
   'user/getUser',
   async (_, { rejectWithValue }) => {
-    const response = await fetch(`${API_BASE_URL}/user`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-        Authorization: `Bearer ${window.localStorage.getItem('auth_token')}`,
-      },
-    })
+    const response = await userApi
+      .getUser()
       .then((res) => {
         if (res.ok) {
           return res.json()
@@ -88,14 +52,9 @@ export const getUser = createAsyncThunk<PostUserResponse, void, { rejectValue: K
 
 export const loginUser = createAsyncThunk<PostUserResponse, Partial<UserCredentials>, { rejectValue: KnownError }>(
   'user/loginUser',
-  async (user: Partial<UserCredentials>, { rejectWithValue }) => {
-    const response = await fetch(`${API_BASE_URL}/users/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-      },
-      body: JSON.stringify({ user: user }),
-    })
+  async (userCredentials: Partial<UserCredentials>, { rejectWithValue }) => {
+    const response = await userApi
+      .login(userCredentials)
       .then((res) => {
         return res.json().then((data) => ({ ok: res.ok, status: res.status, body: data }))
       })
@@ -120,14 +79,8 @@ export const loginUser = createAsyncThunk<PostUserResponse, Partial<UserCredenti
 export const editUser = createAsyncThunk<PostUserResponse, Partial<User>, { rejectValue: KnownError }>(
   'user/editUser',
   async (user: Partial<User>, { rejectWithValue }) => {
-    const response = await fetch(`${API_BASE_URL}/user`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8',
-        Authorization: `Bearer ${window.localStorage.getItem('auth_token')}`,
-      },
-      body: JSON.stringify({ user: user }),
-    })
+    const response = await userApi
+      .editUser(user)
       .then((res) => {
         if (res.ok) {
           return res.json()
