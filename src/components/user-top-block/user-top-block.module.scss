@@ -1,0 +1,58 @@
+.user-top-block {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.user-top-block__create-article {
+    font-family: 'Inter UI';
+    font-size: 14px;
+    line-height: 22px;
+    height: 32px;
+    margin-left: 20px;
+    border-radius: 6px;
+    border-style: solid;
+    border-width: 1px;
+    background-color: transparent;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    box-sizing: border-box;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.user-top-block__create-article {
+    color: #52C41A;
+    border-color: #52C41A;
+
+    &:hover {
+        color: #369b04;
+        border-color: #369b04;
+    }
+    &:active {
+        background-color: #53c41a1f;
+    }
+}
+
+.user-top-block__username {
+    font-family: 'Inter UI';
+    font-size: 18px;
+    line-height: 28px;
+    color: rgba(0, 0, 0, 0.85);
+    margin-left: 25px;
+    cursor: pointer;
+}
+
+.user-top-block__avatar {
+    margin-left: 15px;
+    cursor: pointer;
+}
+
+.user-top-block__log-out {
+    font-family: 'Inter UI';
+    font-size: 18px;
+    line-height: 28px;
+    color: rgba(0, 0, 0, 0.75);
+    height: 50px;
+    margin-left: 25px;
+}

@@ -1,0 +1,26 @@
+.post {
+    padding: 20px;
+    width: 940px;
+    background: #FFFFFF;
+    border-radius: 5px;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+}
+
+.post__description {
+    width: 680px;
+    font-family: 'Inter UI';
+    font-size: 12px;
+    line-height: 22px;
+    color: rgba(0, 0, 0, 0.5);
+    overflow-x: auto;
+}
+
+.post__text {
+    font-family: 'Inter UI';
+    font-size: 20px;
+    line-height: 28px;
+    color: rgba(0, 0, 0, 0.75);
+    overflow-x: auto;
+    white-space: inherit;
+}

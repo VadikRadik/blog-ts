@@ -1,0 +1,159 @@
+.post-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.post-header__title-layout {
+    display: flex;
+    flex-direction: column;
+}
+
+.post-header__title-line {
+    display: flex;
+}
+
+.post-header__title {
+    font-family: 'Inter UI';
+    font-size: 20px;
+    line-height: 28px;
+    color: #1890FF;
+    max-width: 680px;
+    overflow-x: auto;
+}
+
+.post-header__title--card {
+    height: 30px;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+.post-header__title-link {
+    text-decoration: none;
+}
+
+.post-header__like-icon {
+    margin-left: 15px;
+}
+
+.post-header__like-icon--favorited_false{
+    color: rgba(0, 0, 0, 0.75);
+    transition: all 0.2s ease-out;
+    &:hover {
+        color: #FF0707;
+        filter: drop-shadow(0 0 3px #FF0707);
+    }
+}
+
+.post-header__like-icon--favorited_true {
+    color: #FF0707;
+    transition: all 0.2s ease-out;
+    &:hover {
+        filter: drop-shadow(0 0 1px #FF0707);
+    }
+}
+
+.post-header__likes-counter {
+    margin-left: 5px;
+    color: rgba(0, 0, 0, 0.75);
+}
+
+.post-header__tags {
+    display: flex;
+    max-width: 680px;
+}
+
+.post-header__tags--card {
+    overflow-x: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.post-header__tags--card::-webkit-scrollbar {
+    display: none;
+}
+
+.post-header__tags--post {
+    flex-wrap: wrap;
+    overflow-x: auto;
+}
+
+.post-header__tag {
+    background-color: transparent;
+}
+
+.post-header__user-layout {
+    display: flex;
+    align-items: flex-start;
+    margin-left: 15px;
+}
+
+.post-header__user-name-and-date {
+    display: flex;
+    flex-direction: column;
+}
+
+.post-header__user-name {
+    font-family: 'Inter UI';
+    font-size: 18px;
+    line-height: 28px;
+    color: rgba(0, 0, 0, 0.85);
+}
+
+.post-header__date {
+    font-family: 'Inter UI';
+    font-size: 12px;
+    line-height: 22px;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.post-header__user-avatar {
+    margin-left: 15px;
+}
+
+.post-header__user-and-edit {
+    display: flex;
+    flex-direction: column;
+}
+
+.post-header__edit-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top: 30px;
+}
+
+.post-header__button-delete {
+    height: 32px;
+    width: 80px;
+}
+
+.post-header__button-edit {
+    font-family: 'Inter UI';
+    font-size: 14px;
+    line-height: 22px;
+    width: 70px;
+    height: 32px;
+    margin-left: 15px;
+    border-radius: 6px;
+    border-style: solid;
+    border-width: 1px;
+    background-color: transparent;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    box-sizing: border-box;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.post-header__button-edit {
+    color: #52C41A;
+    border-color: #52C41A;
+
+    &:hover {
+        color: #369b04;
+        border-color: #369b04;
+    }
+    &:active {
+        background-color: #53c41a1f;
+    }
+}

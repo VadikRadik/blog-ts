@@ -1,0 +1,42 @@
+.login-top-block {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.login-top-block__sign-in {
+    font-size: 18px;
+    line-height: 28px;
+    color: rgba(0, 0, 0, 0.85);
+    height: 50px;
+}
+
+.login-top-block__sign-up {
+    font-size: 18px;
+    line-height: 28px;
+    height: 50px;
+    margin-left: 20px;
+    border-radius: 6px;
+    border-style: solid;
+    border-width: 1px;
+    background-color: transparent;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    box-sizing: border-box;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.login-top-block__sign-up {
+    color: #52C41A;
+    border-color: #52C41A;
+
+    &:hover {
+        color: #369b04;
+        border-color: #369b04;
+    }
+
+    &:active {
+        background-color: #53c41a1f;
+    }
+}

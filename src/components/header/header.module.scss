@@ -1,0 +1,21 @@
+.header {
+    width: 100%;
+    height: 80px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #FFFFFF;
+}
+
+.header__label {
+    font-size: 18px;
+    line-height: 28px;
+    color: rgba(0, 0, 0, 0.85);
+    margin-left: 22px;
+    cursor: pointer;
+}
+
+.header__login-top-block {
+    margin-right: 22px;
+}
