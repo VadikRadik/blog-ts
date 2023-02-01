@@ -163,9 +163,11 @@ const ProfileForm = () => {
     setEmailError(userState.error?.body?.email ?? '')
     if (userState.error?.body) {
       const message = Object.entries(userState.error.body).reduce((acc, entry) => {
-        return acc + `${entry[0]}: ${entry[1]}\n`
+        return acc + `${JSON.stringify(entry[0])}: ${JSON.stringify(entry[1])}\n`
       }, '')
-      showToast('error', message)
+      showToast('error', message.replaceAll('"', ''))
+    } else if (userState.error?.message) {
+      showToast('error', userState.error?.message)
     }
   }, [userState.error])
 

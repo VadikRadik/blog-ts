@@ -90,9 +90,11 @@ const SignInForm = (routeProps: RouteComponentProps) => {
 
     if (userState.error?.body) {
       const message = Object.entries(userState.error.body).reduce((acc, entry) => {
-        return acc + `${entry[0]}: ${entry[1]}\n`
+        return acc + `${JSON.stringify(entry[0])}: ${JSON.stringify(entry[1])}\n`
       }, '')
-      messageApi.open({ type: 'error', content: message })
+      messageApi.open({ type: 'error', content: message.replaceAll('"', '') })
+    } else if (userState.error?.message) {
+      messageApi.open({ type: 'error', content: userState.error?.message })
     }
   }, [userState.error])
 
