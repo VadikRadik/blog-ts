@@ -4,7 +4,6 @@ import { Article } from '../../services/api/articles-api-types'
 import classes from './post-card.module.scss'
 
 export interface PostCardProps {
-  //key: string
   article: Article
 }
 

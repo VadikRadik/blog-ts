@@ -66,5 +66,3 @@ export const TagsBlock = ({ control }: TagsBlockProps) => {
     </>
   )
 }
-
-//export default TagsBlock
