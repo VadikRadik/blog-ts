@@ -1,6 +1,6 @@
 import { Button, message } from 'antd'
-import { useForm, FieldErrors, Controller, Control, DefaultValues } from 'react-hook-form'
-import { useEffect, useState } from 'react'
+import { useForm, Controller, Control, DefaultValues } from 'react-hook-form'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 // eslint-disable-next-line import/named
 import { RouteComponentProps, withRouter } from 'react-router-dom'
@@ -35,22 +35,9 @@ const validationRules = {
   },
 }
 
-type ErrorSetter = React.Dispatch<React.SetStateAction<string | undefined>>
-
-interface IStateErrorsSetters {
-  title: ErrorSetter
-  description: ErrorSetter
-  text: ErrorSetter
-}
-
 type HistoryType = RouteComponentProps['history']
 
-const onSubmit = (
-  stateSetters: IStateErrorsSetters,
-  dispatch: DispatchType,
-  slug: string | undefined,
-  history: HistoryType,
-) => {
+const onSubmit = (dispatch: DispatchType, slug: string | undefined, history: HistoryType) => {
   return (data: IFormInput) => {
     const onlyNotEmptyTags = data.tags.filter((tag) => tag.tag.trim().length > 0)
     const tagsList = onlyNotEmptyTags.map((tag) => tag.tag)
@@ -72,32 +59,6 @@ const onSubmit = (
           history.push(ROOT_PATH)
         }
       })
-    }
-
-    stateSetters.title('')
-    stateSetters.description('')
-    stateSetters.text('')
-  }
-}
-
-const onError = (stateSetters: IStateErrorsSetters) => {
-  return (errors: FieldErrors<IFormInput>) => {
-    if (errors?.title) {
-      stateSetters.title(errors.title.message)
-    } else {
-      stateSetters.title('')
-    }
-
-    if (errors?.description) {
-      stateSetters.description(errors.description.message)
-    } else {
-      stateSetters.description('')
-    }
-
-    if (errors?.text) {
-      stateSetters.text(errors.text.message)
-    } else {
-      stateSetters.text('')
     }
   }
 }
@@ -128,7 +89,12 @@ const EditArticleForm: React.FC<EditArticleFormProps> = ({ history, slug }) => {
     ? async () => fetchArticle(slug)
     : defaultValuesEmpty
 
-  const { control, handleSubmit, reset } = useForm<IFormInput>({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<IFormInput>({
     defaultValues: defaultValues,
   })
 
@@ -140,15 +106,6 @@ const EditArticleForm: React.FC<EditArticleFormProps> = ({ history, slug }) => {
 
   const articlesState = useSelector((state: RootState) => state.articles)
 
-  const [titleError, setTitleError] = useState<string | undefined>('')
-  const [descriptionError, setDescriptionError] = useState<string | undefined>('')
-  const [textError, setTextError] = useState<string | undefined>('')
-
-  const stateErrorsSetters = {
-    title: setTitleError,
-    description: setDescriptionError,
-    text: setTextError,
-  }
   const dispatch = useDispatch<AppDispatch>()
 
   const [messageApi, contextHolder] = message.useMessage()
@@ -161,10 +118,7 @@ const EditArticleForm: React.FC<EditArticleFormProps> = ({ history, slug }) => {
   return (
     <>
       {contextHolder}
-      <form
-        className={classes['edit-article-form']}
-        onSubmit={handleSubmit(onSubmit(stateErrorsSetters, dispatch, slug, history), onError(stateErrorsSetters))}
-      >
+      <form className={classes['edit-article-form']} onSubmit={handleSubmit(onSubmit(dispatch, slug, history))}>
         <div className={classes['edit-article-form__header']}>{isEdit ? 'Edit article' : 'Create new article'}</div>
 
         <div className={classes['edit-article__field']}>
@@ -172,7 +126,7 @@ const EditArticleForm: React.FC<EditArticleFormProps> = ({ history, slug }) => {
             label={'Title'}
             name={'title'}
             validationRule={validationRules.title}
-            error={titleError}
+            error={errors.title?.message}
             control={control}
           />
         </div>
@@ -182,7 +136,7 @@ const EditArticleForm: React.FC<EditArticleFormProps> = ({ history, slug }) => {
             label={'Short description'}
             name={'description'}
             validationRule={validationRules.description}
-            error={descriptionError}
+            error={errors.description?.message}
             control={control}
           />
         </div>
@@ -195,10 +149,10 @@ const EditArticleForm: React.FC<EditArticleFormProps> = ({ history, slug }) => {
           control={control}
           rules={validationRules.text}
           render={({ field }) => (
-            <TextArea rows={6} style={{ resize: 'none' }} status={textError ? 'error' : ''} {...field} />
+            <TextArea rows={6} style={{ resize: 'none' }} status={errors.text?.message ? 'error' : ''} {...field} />
           )}
         />
-        <div className={classes['edit-article__validation-error']}>{textError ?? ''}</div>
+        <div className={classes['edit-article__validation-error']}>{errors.text?.message ?? ''}</div>
 
         <TagsBlock control={control as unknown as Control<ITagable>} />
 

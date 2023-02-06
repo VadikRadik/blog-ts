@@ -1,6 +1,6 @@
 import { Button, message } from 'antd'
-import { useForm, FieldErrors } from 'react-hook-form'
-import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { AppDispatch, DispatchType } from '../../services/store/store'
@@ -31,7 +31,10 @@ const validationRules = {
   },
   email: {
     required: 'Email addres is required',
-    pattern: /^.+@.+$/,
+    pattern: {
+      value: /^.+@.+$/,
+      message: 'invalid email addres',
+    },
   },
   password: {
     required: 'Password is required',
@@ -45,24 +48,14 @@ const validationRules = {
     },
   },
   avatar: {
-    pattern: /^https?:\/\/.+$/,
+    pattern: {
+      value: /^https?:\/\/.+$/,
+      message: 'invalid avatar url',
+    },
   },
 }
 
-type ErrorSetter = React.Dispatch<React.SetStateAction<string | undefined>>
-
-interface IStateErrorsSetters {
-  userName: ErrorSetter
-  email: ErrorSetter
-  password: ErrorSetter
-  avatar: ErrorSetter
-}
-
-const onSubmit = (
-  stateSetters: IStateErrorsSetters,
-  dispatch: DispatchType,
-  showToast: (type: 'success' | 'error', content: string) => void,
-) => {
+const onSubmit = (dispatch: DispatchType, showToast: (type: 'success' | 'error', content: string) => void) => {
   return (data: IFormInput) => {
     dispatch(
       editUser({
@@ -81,53 +74,17 @@ const onSubmit = (
       .catch((error) => {
         showToast('error', error.message)
       })
-
-    stateSetters.userName('')
-    stateSetters.email('')
-    stateSetters.password('')
-    stateSetters.avatar('')
-  }
-}
-
-const onError = (stateSetters: IStateErrorsSetters) => {
-  return (errors: FieldErrors<IFormInput>) => {
-    if (errors?.userName) {
-      stateSetters.userName(errors.userName.message)
-    } else {
-      stateSetters.userName('')
-    }
-
-    if (errors?.email) {
-      if (errors.email.type === 'pattern') {
-        stateSetters.email('invalid email addres')
-      } else {
-        stateSetters.email(errors.email.message)
-      }
-    } else {
-      stateSetters.email('')
-    }
-
-    if (errors?.password) {
-      stateSetters.password(errors.password.message)
-    } else {
-      stateSetters.password('')
-    }
-
-    if (errors?.avatar) {
-      if (errors.avatar.type === 'pattern') {
-        stateSetters.avatar('invalid avatar url')
-      } else {
-        stateSetters.avatar(errors.avatar.message)
-      }
-    } else {
-      stateSetters.avatar('')
-    }
   }
 }
 
 const ProfileForm = () => {
   const userState = useSelector((state: RootState) => state.users)
-  const { control, handleSubmit } = useForm({
+  const {
+    control,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
       userName: userState.username,
       email: userState.email,
@@ -136,17 +93,6 @@ const ProfileForm = () => {
     },
   })
 
-  const [userNameError, setUserNameError] = useState<string | undefined>('')
-  const [emailError, setEmailError] = useState<string | undefined>('')
-  const [passwordError, setPasswordError] = useState<string | undefined>('')
-  const [avatarError, setAvatarError] = useState<string | undefined>('')
-
-  const stateErrorsSetters = {
-    userName: setUserNameError,
-    email: setEmailError,
-    password: setPasswordError,
-    avatar: setAvatarError,
-  }
   const dispatch = useDispatch<AppDispatch>()
 
   const [messageApi, contextHolder] = message.useMessage()
@@ -159,8 +105,8 @@ const ProfileForm = () => {
   }
 
   useEffect(() => {
-    setUserNameError(userState.error?.body?.username ?? '')
-    setEmailError(userState.error?.body?.email ?? '')
+    setError('userName', { message: userState.error?.body?.username ?? '' })
+    setError('email', { message: userState.error?.body?.email ?? '' })
     if (userState.error?.body) {
       const message = Object.entries(userState.error.body).reduce((acc, entry) => {
         return acc + `${JSON.stringify(entry[0])}: ${JSON.stringify(entry[1])}\n`
@@ -174,10 +120,7 @@ const ProfileForm = () => {
   return (
     <>
       {contextHolder}
-      <form
-        className={classes['profile-form']}
-        onSubmit={handleSubmit(onSubmit(stateErrorsSetters, dispatch, showToast), onError(stateErrorsSetters))}
-      >
+      <form className={classes['profile-form']} onSubmit={handleSubmit(onSubmit(dispatch, showToast))}>
         <div className={classes['profile-form__header']}>Edit Profile</div>
 
         <div className={classes['profile-form__field']}>
@@ -185,7 +128,7 @@ const ProfileForm = () => {
             label={'Username'}
             name={'userName'}
             validationRule={validationRules.userName}
-            error={userNameError}
+            error={errors.userName?.message}
             control={control}
           />
         </div>
@@ -195,7 +138,7 @@ const ProfileForm = () => {
             label={'Email address'}
             name={'email'}
             validationRule={validationRules.email}
-            error={emailError}
+            error={errors.email?.message}
             control={control}
           />
         </div>
@@ -205,7 +148,7 @@ const ProfileForm = () => {
             label={'New password'}
             name={'password'}
             validationRule={validationRules.password}
-            error={passwordError}
+            error={errors.password?.message}
             control={control}
           />
         </div>
@@ -215,7 +158,7 @@ const ProfileForm = () => {
             label={'Avatar image (url)'}
             name={'avatar'}
             validationRule={validationRules.avatar}
-            error={avatarError}
+            error={errors.avatar?.message}
             control={control}
           />
         </div>
