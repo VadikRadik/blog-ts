@@ -1,6 +1,6 @@
 import { Button, Checkbox, Divider } from 'antd'
-import { useForm, FieldErrors, Controller, RegisterOptions } from 'react-hook-form'
-import { useEffect, useState } from 'react'
+import { useForm, Controller, RegisterOptions } from 'react-hook-form'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 // eslint-disable-next-line import/named
 import { RouteComponentProps, withRouter, Link } from 'react-router-dom'
@@ -35,7 +35,10 @@ const validationRules = {
   },
   email: {
     required: 'Email addres is required',
-    pattern: /^.+@.+$/,
+    pattern: {
+      value: /^.+@.+$/,
+      message: 'invalid email addres',
+    },
   },
   password: {
     required: 'Password is required',
@@ -50,27 +53,17 @@ const validationRules = {
   },
   repeatPassword: {
     validate: (repeatPassword: string, formValues: IFormInput) => {
-      return repeatPassword === formValues.password
+      return repeatPassword === formValues.password ? true : 'Passwords do not match'
     },
   },
   agreeTerms: {
     validate: (agreeTerms: boolean) => {
-      return agreeTerms
+      return agreeTerms ? true : 'Please accept the agreement of the processing of the personal information'
     },
   },
 }
 
-type ErrorSetter = React.Dispatch<React.SetStateAction<string | undefined>>
-
-interface IStateErrorsSetters {
-  userName: ErrorSetter
-  email: ErrorSetter
-  password: ErrorSetter
-  repeatPassword: ErrorSetter
-  agreeTerms: ErrorSetter
-}
-
-const onSubmit = (stateSetters: IStateErrorsSetters, dispatch: DispatchType, routeProps: RouteComponentProps) => {
+const onSubmit = (dispatch: DispatchType, routeProps: RouteComponentProps) => {
   return (data: IFormInput) => {
     dispatch(postUser({ username: data.userName, email: data.email.toLowerCase(), password: data.password })).then(
       (res) => {
@@ -79,55 +72,16 @@ const onSubmit = (stateSetters: IStateErrorsSetters, dispatch: DispatchType, rou
         }
       },
     )
-
-    stateSetters.userName('')
-    stateSetters.email('')
-    stateSetters.password('')
-    stateSetters.repeatPassword('')
-    stateSetters.agreeTerms('')
-  }
-}
-
-const onError = (stateSetters: IStateErrorsSetters) => {
-  return (errors: FieldErrors<IFormInput>) => {
-    if (errors?.userName) {
-      stateSetters.userName(errors.userName.message)
-    } else {
-      stateSetters.userName('')
-    }
-
-    if (errors?.email) {
-      if (errors.email.type === 'pattern') {
-        stateSetters.email('invalid email addres')
-      } else {
-        stateSetters.email(errors.email.message)
-      }
-    } else {
-      stateSetters.email('')
-    }
-
-    if (errors?.password) {
-      stateSetters.password(errors.password.message)
-    } else {
-      stateSetters.password('')
-    }
-
-    if (errors?.repeatPassword) {
-      stateSetters.repeatPassword('Passwords do not match')
-    } else {
-      stateSetters.repeatPassword('')
-    }
-
-    if (errors?.agreeTerms) {
-      stateSetters.agreeTerms('Please accept the agreement of the processing of the personal information')
-    } else {
-      stateSetters.agreeTerms('')
-    }
   }
 }
 
 const SignUpForm = (routeProps: RouteComponentProps) => {
-  const { control, handleSubmit } = useForm({
+  const {
+    control,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
       userName: '',
       email: '',
@@ -137,24 +91,12 @@ const SignUpForm = (routeProps: RouteComponentProps) => {
     },
   })
 
-  const [userNameError, setUserNameError] = useState<string | undefined>('')
-  const [emailError, setEmailError] = useState<string | undefined>('')
-  const [passwordError, setPasswordError] = useState<string | undefined>('')
-  const [repeatPasswordError, setRepeatPasswordError] = useState<string | undefined>('')
-  const [agreeTerms, setAgreeTermsError] = useState<string | undefined>('')
-  const stateErrorsSetters = {
-    userName: setUserNameError,
-    email: setEmailError,
-    password: setPasswordError,
-    repeatPassword: setRepeatPasswordError,
-    agreeTerms: setAgreeTermsError,
-  }
   const dispatch = useDispatch<AppDispatch>()
   const userState = useSelector((state: RootState) => state.users)
 
   useEffect(() => {
-    setUserNameError(userState.error?.body?.username ?? '')
-    setEmailError(userState.error?.body?.email ?? '')
+    setError('userName', { message: userState.error?.body?.username ?? '' })
+    setError('email', { message: userState.error?.body?.email ?? '' })
   }, [userState.error])
 
   useEffect(() => {
@@ -162,10 +104,7 @@ const SignUpForm = (routeProps: RouteComponentProps) => {
   }, [])
 
   return (
-    <form
-      className={classes['sign-up-form']}
-      onSubmit={handleSubmit(onSubmit(stateErrorsSetters, dispatch, routeProps), onError(stateErrorsSetters))}
-    >
+    <form className={classes['sign-up-form']} onSubmit={handleSubmit(onSubmit(dispatch, routeProps))}>
       <div className={classes['sign-up-form__header']}>Create new account</div>
 
       <div className={classes['sign-up-form__field']}>
@@ -173,7 +112,7 @@ const SignUpForm = (routeProps: RouteComponentProps) => {
           label={'Username'}
           name={'userName'}
           validationRule={validationRules.userName}
-          error={userNameError}
+          error={errors.userName?.message}
           control={control}
         />
       </div>
@@ -183,7 +122,7 @@ const SignUpForm = (routeProps: RouteComponentProps) => {
           label={'Email address'}
           name={'email'}
           validationRule={validationRules.email}
-          error={emailError}
+          error={errors.email?.message}
           control={control}
         />
       </div>
@@ -193,7 +132,7 @@ const SignUpForm = (routeProps: RouteComponentProps) => {
           label={'Password'}
           name={'password'}
           validationRule={validationRules.password}
-          error={passwordError}
+          error={errors.password?.message}
           control={control}
         />
       </div>
@@ -203,7 +142,7 @@ const SignUpForm = (routeProps: RouteComponentProps) => {
           label={'Repeat Password'}
           name={'repeatPassword'}
           validationRule={validationRules.repeatPassword as RegisterOptions}
-          error={repeatPasswordError}
+          error={errors.repeatPassword?.message}
           control={control}
         />
       </div>
@@ -223,7 +162,7 @@ const SignUpForm = (routeProps: RouteComponentProps) => {
           )
         }}
       />
-      <div className={classes['sign-up-form__validation-error']}>{agreeTerms ?? ''}</div>
+      <div className={classes['sign-up-form__validation-error']}>{errors.agreeTerms?.message ?? ''}</div>
 
       <Button
         type='primary'
