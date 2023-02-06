@@ -12,6 +12,7 @@ import { deleteArticle, like, deleteLike } from '../../services/store/articles-s
 import { Article, KnownError } from '../../services/api/articles-api-types'
 import Avatar from '../avatar/avatar'
 import { RootState } from '../../services/store/user-slice'
+import { ROOT_PATH, ARTICLES_PATH } from '../../services/routes/routes'
 
 import classes from './post-header.module.scss'
 
@@ -29,7 +30,7 @@ const PostHeader: React.FC<PostHeaderProps> = ({ isCard, article, history }) => 
   const titleClass = classnames([classes['post-header__title']], { [classes['post-header__title--card']]: isCard })
   const titleText = <div className={titleClass}>{article.title}</div>
   const title = isCard ? (
-    <Link to={`articles/${article.slug}`} className={classes['post-header__title-link']}>
+    <Link to={`${ARTICLES_PATH}${article.slug}`} className={classes['post-header__title-link']}>
       {titleText}
     </Link>
   ) : (
@@ -59,7 +60,7 @@ const PostHeader: React.FC<PostHeaderProps> = ({ isCard, article, history }) => 
     dispatch(deleteArticle(article.slug))
       .then((res) => {
         if (res.type === 'articles/deleteArticle/fulfilled') {
-          history.push('/')
+          history.push(ROOT_PATH)
         } else {
           throw Error(`${(res.payload as unknown as KnownError).message}`)
         }
@@ -87,7 +88,7 @@ const PostHeader: React.FC<PostHeaderProps> = ({ isCard, article, history }) => 
           </Popconfirm>
           <button
             className={classes['post-header__button-edit']}
-            onClick={() => history.push(`/articles/${article.slug}/edit`)}
+            onClick={() => history.push(`${ARTICLES_PATH}${article.slug}/edit`)}
           >
             Edit
           </button>

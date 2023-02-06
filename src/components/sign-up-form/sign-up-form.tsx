@@ -9,6 +9,7 @@ import { AppDispatch, DispatchType } from '../../services/store/store'
 import { postUser, RootState, resetError } from '../../services/store/user-slice'
 import FormTextField from '../form-components/form-text-field'
 import FormPasswordField from '../form-components/form-password-field'
+import { ROOT_PATH, SIGN_IN_PATH } from '../../services/routes/routes'
 
 import classes from './sign-up-form.module.scss'
 
@@ -74,7 +75,7 @@ const onSubmit = (stateSetters: IStateErrorsSetters, dispatch: DispatchType, rou
     dispatch(postUser({ username: data.userName, email: data.email.toLowerCase(), password: data.password })).then(
       (res) => {
         if (res.type === 'user/postUser/fulfilled') {
-          routeProps.history.push('/')
+          routeProps.history.push(ROOT_PATH)
         }
       },
     )
@@ -236,7 +237,7 @@ const SignUpForm = (routeProps: RouteComponentProps) => {
 
       <div className={classes['sign-up-form__sign-in-redirection']}>
         Already have an account?{' '}
-        <Link to='/sign-in' className={classes['sign-up-form__sign-in-redirection-link']}>
+        <Link to={SIGN_IN_PATH} className={classes['sign-up-form__sign-in-redirection-link']}>
           Sign In.
         </Link>
       </div>

@@ -6,6 +6,7 @@ import { RouteComponentProps, withRouter } from 'react-router-dom'
 import Avatar from '../avatar'
 import { logOut, RootState } from '../../services/store/user-slice'
 import { AppDispatch } from '../../services/store/store'
+import { NEW_ARTICLE_PATH, PROFILE_PATH } from '../../services/routes/routes'
 
 import classes from './user-top-block.module.scss'
 
@@ -15,13 +16,13 @@ const UserTopBlock: React.FC<RouteComponentProps> = ({ history }) => {
 
   return (
     <div className={classes['user-top-block']}>
-      <button className={classes['user-top-block__create-article']} onClick={() => history.push('/new-article')}>
+      <button className={classes['user-top-block__create-article']} onClick={() => history.push(NEW_ARTICLE_PATH)}>
         Create article
       </button>
-      <div className={classes['user-top-block__username']} onClick={() => history.push('/profile')}>
+      <div className={classes['user-top-block__username']} onClick={() => history.push(PROFILE_PATH)}>
         {userState.username}
       </div>
-      <div className={classes['user-top-block__avatar']} onClick={() => history.push('/profile')}>
+      <div className={classes['user-top-block__avatar']} onClick={() => history.push(PROFILE_PATH)}>
         <Avatar imageUrl={userState.image} />
       </div>
       <Button size='large' className={classes['user-top-block__log-out']} onClick={() => dispatch(logOut())}>

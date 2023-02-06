@@ -13,6 +13,16 @@ import EditArticleForm from '../edit-article-form'
 import { getUser, RootState } from '../../services/store/user-slice'
 import { AppDispatch } from '../../services/store/store'
 import PrivateRoute from '../private-route'
+import {
+  ROOT_PATH,
+  ARTICLES_PATH,
+  ARTICLE_SLUG_PATH,
+  SIGN_UP_PATH,
+  SIGN_IN_PATH,
+  PROFILE_PATH,
+  NEW_ARTICLE_PATH,
+  EDIT_ARTICLE_PATH,
+} from '../../services/routes/routes'
 
 import classes from './blog-app.module.scss'
 
@@ -44,27 +54,27 @@ const BlogApp: React.FC = () => {
         <Header />
         <div className={classes['blog-app__content-wrapper']}>
           <Switch>
-            <Route path='/' exact>
+            <Route path={ROOT_PATH} exact>
               <PostsList />
             </Route>
-            <Route path='/articles/' exact>
+            <Route path={ARTICLES_PATH} exact>
               <PostsList />
             </Route>
-            <Route path='/articles/:slug' exact render={({ match }) => <Post slug={match.params.slug} />} />
-            <Route path='/sign-up' exact>
+            <Route path={ARTICLE_SLUG_PATH} exact render={({ match }) => <Post slug={match.params.slug} />} />
+            <Route path={SIGN_UP_PATH} exact>
               <SignUpForm />
             </Route>
-            <Route path='/sign-in' exact>
+            <Route path={SIGN_IN_PATH} exact>
               <SignInForm />
             </Route>
-            <Route path='/profile' exact>
+            <Route path={PROFILE_PATH} exact>
               <PrivateRoute isLoggedIn={isLoggedIn} privateElement={<ProfileForm />} />
             </Route>
-            <Route path='/new-article'>
+            <Route path={NEW_ARTICLE_PATH}>
               <PrivateRoute isLoggedIn={isLoggedIn} privateElement={<EditArticleForm />} />
             </Route>
             <Route
-              path='/articles/:slug/edit'
+              path={EDIT_ARTICLE_PATH}
               render={({ match }) => {
                 return (
                   <PrivateRoute isLoggedIn={isLoggedIn} privateElement={<EditArticleForm slug={match.params.slug} />} />

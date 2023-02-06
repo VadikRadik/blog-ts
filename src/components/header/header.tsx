@@ -7,6 +7,7 @@ import LoginTopBlock from '../login-top-block'
 import { getUser, RootState } from '../../services/store/user-slice'
 import { AppDispatch } from '../../services/store/store'
 import UserTopBlock from '../user-top-block'
+import { ROOT_PATH } from '../../services/routes/routes'
 
 import classes from './header.module.scss'
 
@@ -23,7 +24,7 @@ const Header: React.FC<RouteComponentProps> = ({ history }) => {
 
   return (
     <div className={classes['header']}>
-      <span className={classes['header__label']} onClick={() => history.push('/')}>
+      <span className={classes['header__label']} onClick={() => history.push(ROOT_PATH)}>
         Realworld Blog
       </span>
       <div className={classes['header__login-top-block']}>{topBlock}</div>

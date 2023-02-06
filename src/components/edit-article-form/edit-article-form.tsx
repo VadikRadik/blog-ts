@@ -12,6 +12,7 @@ import { Article, RootState, API_BASE_URL } from '../../services/api/articles-ap
 import FormTextField from '../form-components/form-text-field'
 import TagsBlock from '../form-components/tags-block'
 import { ITag, ITagable } from '../form-components/tags-block/tags-block'
+import { ROOT_PATH, ARTICLES_PATH } from '../../services/routes/routes'
 
 import classes from './edit-article-form.module.scss'
 
@@ -62,13 +63,13 @@ const onSubmit = (
     if (slug) {
       dispatch(editArticle({ ...article, slug: slug })).then((res) => {
         if (res.type === 'articles/editArticle/fulfilled') {
-          history.push(`/articles/${slug}`)
+          history.push(`${ARTICLES_PATH}${slug}`)
         }
       })
     } else {
       dispatch(createArticle(article)).then((res) => {
         if (res.type === 'articles/createArticle/fulfilled') {
-          history.push('/')
+          history.push(ROOT_PATH)
         }
       })
     }

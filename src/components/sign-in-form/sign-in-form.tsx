@@ -9,6 +9,7 @@ import { AppDispatch, DispatchType } from '../../services/store/store'
 import { loginUser, RootState, resetError } from '../../services/store/user-slice'
 import FormTextField from '../form-components/form-text-field'
 import FormPasswordField from '../form-components/form-password-field'
+import { ROOT_PATH, SIGN_UP_PATH } from '../../services/routes/routes'
 
 import classes from './sign-in-form.module.scss'
 
@@ -38,7 +39,7 @@ const onSubmit = (stateSetters: IStateErrorsSetters, dispatch: DispatchType, rou
   return (data: IFormInput) => {
     dispatch(loginUser({ email: data.email.toLowerCase(), password: data.password })).then((res) => {
       if (res.type === 'user/loginUser/fulfilled') {
-        routeProps.history.push('/')
+        routeProps.history.push(ROOT_PATH)
       }
     })
 
@@ -143,7 +144,7 @@ const SignInForm = (routeProps: RouteComponentProps) => {
 
         <div className={classes['sign-in-form__sign-up-redirection']}>
           Don’t have an account?{' '}
-          <Link to='/sign-up' className={classes['sign-in-form__sign-up-redirection-link']}>
+          <Link to={SIGN_UP_PATH} className={classes['sign-in-form__sign-up-redirection-link']}>
             Sign Up.
           </Link>
         </div>
